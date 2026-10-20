@@ -9,6 +9,8 @@ import icon from 'astro-icon';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://geothai.fasu.dev',
+  trailingSlash: 'always',
+  prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   integrations: [icon(), sitemap({ filter: (page) => !page.endsWith('/404/') })],
   fonts: [
     {
