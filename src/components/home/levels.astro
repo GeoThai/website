@@ -1,6 +1,7 @@
 ---
 import Container from '@/components/ui/container.astro';
 import { loadData, startPlace } from '@/lib/data';
+import { areaSlug } from '@/utils/slug';
 
 const { provinces, districts, subdistricts } = await loadData();
 const { province: prov, district: dist, subdistrict: sub } = await startPlace();
@@ -8,6 +9,7 @@ const { province: prov, district: dist, subdistrict: sub } = await startPlace();
 const rows = [
   {
     id: 'province',
+    href: `/${areaSlug(prov)}/`,
     code: prov.code,
     name: prov.name_en,
     count: provinces.length,
@@ -50,8 +52,18 @@ const rows = [
             {r.code}
           </span>
           <span class="text-slate">
-            <span data-level-name={r.id}>{r.name}</span>, one of {r.count.toLocaleString('en')}{' '}
-            {r.noun}
+            {r.href ? (
+              <a
+                data-level-name={r.id}
+                href={r.href}
+                class="text-black underline underline-offset-4 hover:no-underline"
+              >
+                {r.name}
+              </a>
+            ) : (
+              <span data-level-name={r.id}>{r.name}</span>
+            )}
+            , one of {r.count.toLocaleString('en')} {r.noun}
           </span>
         </li>
       ))}
@@ -62,6 +74,7 @@ const rows = [
 <script>
   import { revealSection } from '@/lib/motion';
   import type { Row } from '@/utils/search';
+  import { areaSlug } from '@/utils/slug';
 
   const section = document.getElementById('data');
   const title = document.getElementById('levels-title');
@@ -80,6 +93,9 @@ const rows = [
       if (codeEl) codeEl.textContent = code;
       if (nameEl) nameEl.textContent = name;
     }
+    list
+      ?.querySelector('a[data-level-name="province"]')
+      ?.setAttribute('href', `/${areaSlug({ code: r[0].slice(0, 2), name_en: r[6] })}/`);
   });
 
   if (section && title && list)

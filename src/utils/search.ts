@@ -1,7 +1,7 @@
 /** [code, name_th, name_en, district_th, district_en, province_th, province_en, postal_codes] */
 export type Row = [string, string, string, string, string, string, string, string[]];
 
-const norm = (s: string) =>
+export const norm = (s: string) =>
   s
     .toLowerCase()
     .normalize('NFC')
