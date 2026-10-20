@@ -25,6 +25,7 @@ const rows = [
   },
   {
     id: 'subdistrict',
+    href: `/${areaSlug(prov)}/${areaSlug(dist)}/${areaSlug(sub)}/`,
     code: sub.code,
     name: sub.name_en,
     count: subdistricts.length,
@@ -53,17 +54,13 @@ const rows = [
             {r.code}
           </span>
           <span class="text-slate">
-            {r.href ? (
-              <a
-                data-level-name={r.id}
-                href={r.href}
-                class="text-black underline underline-offset-4 hover:no-underline"
-              >
-                {r.name}
-              </a>
-            ) : (
-              <span data-level-name={r.id}>{r.name}</span>
-            )}
+            <a
+              data-level-name={r.id}
+              href={r.href}
+              class="text-black underline underline-offset-4 hover:no-underline"
+            >
+              {r.name}
+            </a>
             , one of {r.count.toLocaleString('en')} {r.noun}
           </span>
         </li>
@@ -97,7 +94,9 @@ const rows = [
     const province = `/${areaSlug({ code: r[0].slice(0, 2), name_en: r[6] })}/`;
     const district = `${province}${areaSlug({ code: r[0].slice(0, 4), name_en: r[4] })}/`;
     list?.querySelector('a[data-level-name="province"]')?.setAttribute('href', province);
+    const subdistrict = `${district}${areaSlug({ code: r[0], name_en: r[2] })}/`;
     list?.querySelector('a[data-level-name="district"]')?.setAttribute('href', district);
+    list?.querySelector('a[data-level-name="subdistrict"]')?.setAttribute('href', subdistrict);
   });
 
   if (section && title && list)
