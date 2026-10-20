@@ -1,8 +1,11 @@
 # GeoThai website
 
+[![CI](https://github.com/GeoThai/website/actions/workflows/ci.yml/badge.svg)](https://github.com/GeoThai/website/actions/workflows/ci.yml)
+[![Deploy](https://github.com/GeoThai/website/actions/workflows/deploy.yml/badge.svg)](https://github.com/GeoThai/website/actions/workflows/deploy.yml)
+
 The website for [GeoThai/data](https://github.com/GeoThai/data): every province, district, subdistrict and postal code of Thailand, one page each.
 
-Address: [geothai.fasu.dev](https://geothai.fasu.dev).
+Live at [geothai.fasu.dev](https://geothai.fasu.dev).
 
 ## What it builds
 
@@ -42,7 +45,7 @@ The dev server runs at `http://localhost:4321`. Every URL ends with `/`, so open
 | `bun run typecheck` | Runs `astro check`                                |
 | `bun run test`      | Runs the unit tests in `src/utils/`               |
 
-Run `check`, `typecheck` and `test` before you commit.
+Run `check`, `typecheck` and `test` before you commit. CI runs them on every push, then builds the site.
 
 ## Data
 
@@ -74,6 +77,17 @@ src/
 ├── styles/        Tailwind theme: colors, type, radius, motion
 └── utils/         pure functions with tests: slugs, search, formatting, JSON-LD
 ```
+
+## Deploy
+
+The site runs on Cloudflare Workers as static assets. `wrangler.jsonc` holds the settings.
+
+| Workflow     | When it runs           | What it does                                                                                                    |
+| ------------ | ---------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `deploy.yml` | On a push to `main`    | Tests, builds and deploys the site                                                                              |
+| `update.yml` | Every day at 04:00 UTC | If GeoThai/data has a new release, it writes the tag to `data.version`, builds, commits and starts `deploy.yml` |
+
+The `production` environment on GitHub holds two secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 
 ## Stack
 
