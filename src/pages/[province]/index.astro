@@ -1,0 +1,104 @@
+---
+import Breadcrumb from '@/components/place/breadcrumb.astro';
+import Container from '@/components/ui/container.astro';
+import Base from '@/layouts/base.astro';
+import { DATA_VERSION, loadData, type Province } from '@/lib/data';
+import { areaSlug } from '@/utils/slug';
+
+export async function getStaticPaths() {
+  const { provinces } = await loadData();
+  return provinces.map((province) => ({
+    params: { province: areaSlug(province) },
+    props: { province },
+  }));
+}
+
+const { province } = Astro.props as { province: Province };
+const { districts, subdistricts } = await loadData();
+const inProvince = subdistricts.filter((s) => s.province_code === province.code);
+const rows = districts
+  .filter((d) => d.province_code === province.code)
+  .map((d) => {
+    const subs = inProvince.filter((s) => s.district_code === d.code);
+    return {
+      ...d,
+      subdistricts: subs.length,
+      postal: [...new Set(subs.flatMap((s) => s.postal_codes))].sort(),
+    };
+  });
+const postal = [...new Set(inProvince.flatMap((s) => s.postal_codes))].sort();
+const n = (x: number) => x.toLocaleString('en');
+const totals = [
+  { n: rows.length, label: 'districts' },
+  { n: inProvince.length, label: 'subdistricts' },
+  { n: postal.length, label: 'postal codes' },
+];
+---
+
+<Base
+  title={`${province.name_en} (${province.name_th}): districts and postal codes · GeoThai`}
+  description={`${province.name_en} province, code ${province.code}: ${n(rows.length)} districts, ${n(inProvince.length)} subdistricts and ${n(postal.length)} postal codes, checked against official sources.`}
+>
+  <section id="place" class="py-18 md:py-24">
+    <Container class="grid gap-14">
+      <div>
+        <Breadcrumb trail={[{ label: 'Home', href: '/' }, { label: province.name_en }]} />
+        <p class="mt-10 font-mono text-slate tabular-nums">{province.code}</p>
+        <h1 id="place-title" class="mt-2 text-display font-semibold tracking-tight text-balance">
+          {province.name_th}
+        </h1>
+        <p id="place-lead" class="mt-3 text-xl text-slate">{province.name_en} province</p>
+      </div>
+
+      <dl class="grid grid-cols-3 gap-px overflow-hidden rounded-3xl bg-line">
+        {totals.map((t) => (
+          <div class="bg-mist px-5 py-4">
+            <dt class="text-slate text-sm">{t.label}</dt>
+            <dd class="font-semibold text-2xl tabular-nums tracking-tight">{n(t.n)}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <div>
+        <h2 class="text-2xl font-semibold tracking-tight">Districts</h2>
+        <ul id="place-districts" class="mt-5 border-t border-line">
+          {rows.map((d) => (
+            <li class="grid gap-1 border-line border-b py-4 md:grid-cols-12 md:items-baseline md:gap-6">
+              <span class="font-mono text-slate text-sm tabular-nums md:col-span-1">{d.code}</span>
+              <span class="font-semibold md:col-span-3">{d.name_th}</span>
+              <span class="text-slate md:col-span-3">{d.name_en}</span>
+              <span class="text-slate text-sm md:col-span-2">
+                {d.subdistricts} {d.subdistricts === 1 ? 'subdistrict' : 'subdistricts'}
+              </span>
+              <span class="font-mono text-slate text-sm tabular-nums md:col-span-3">
+                {d.postal.join(' ')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <p class="text-sm text-slate">
+        From{' '}
+        <a
+          href={`https://github.com/GeoThai/data/releases/tag/${DATA_VERSION}`}
+          class="font-mono underline underline-offset-4 hover:text-black"
+        >
+          GeoThai/data {DATA_VERSION}
+        </a>
+        .
+      </p>
+    </Container>
+  </section>
+</Base>
+
+<script>
+  import { revealSection } from '@/lib/motion';
+
+  const section = document.getElementById('place');
+  const title = document.getElementById('place-title');
+  const list = document.getElementById('place-districts');
+  if (section && title && list) {
+    revealSection(section, title, document.getElementById('place-lead'), [...list.children]);
+  }
+</script>
