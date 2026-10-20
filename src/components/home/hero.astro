@@ -245,8 +245,6 @@ const cards = [
   });
 
   if (!reduce) {
-    for (const c of cards) c.style.setProperty('rotate', 'none');
-    for (const c of cards) c.style.setProperty('translate', 'none');
     gsap.set(cards, { rotation: (i) => ROT[i] ?? 0, y: (i) => LIFT[i] ?? 0 });
     const title = document.getElementById('hero-title');
     const words = title ? SplitText.create(title, { type: 'words', aria: 'auto' }).words : [];
