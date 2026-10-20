@@ -1,0 +1,57 @@
+---
+import Container from '@/components/ui/container.astro';
+import { startPlace } from '@/lib/data';
+import { TONE, highlightRecord } from '@/utils/record';
+
+const { subdistrict } = await startPlace();
+const lines = highlightRecord(subdistrict);
+---
+
+<section id="use" aria-labelledby="usage-title" class="py-18 md:py-36">
+  <Container class="grid items-start gap-8 md:grid-cols-5 md:gap-20">
+    <div class="md:col-span-2">
+      <h2 id="usage-title" class="max-w-md text-title font-semibold tracking-tight text-balance">One line per place.</h2>
+      <p id="usage-lead" class="mt-5 max-w-xl text-xl leading-normal text-pretty text-slate">
+        Each subdistrict is one JSON line with its code, both names, its district, its province and its postal codes. The
+        same tables come as CSV.
+      </p>
+    </div>
+    <pre
+      aria-label="The subdistrict record"
+      class="overflow-x-auto rounded-panel bg-black p-7 font-mono text-sm leading-relaxed md:col-span-3"><code id="usage-record">{lines.map((line) => (
+  <span class="block">{line.map((t) => <span class={TONE[t.tone]}>{t.text}</span>)}</span>
+))}</code></pre>
+  </Container>
+</section>
+
+<script>
+  import { revealSection } from '@/lib/motion';
+  import { TONE, highlightRecord, rowToRecord } from '@/utils/record';
+  import type { Row } from '@/utils/search';
+
+  const code = document.getElementById('usage-record');
+
+  document.addEventListener('place-pick', (e) => {
+    if (!code) return;
+    const lines = highlightRecord(rowToRecord((e as CustomEvent<Row>).detail));
+    code.replaceChildren(
+      ...lines.map((tokens) => {
+        const line = document.createElement('span');
+        line.className = 'block';
+        line.append(
+          ...tokens.map((t) => {
+            const span = document.createElement('span');
+            span.className = TONE[t.tone];
+            span.textContent = t.text;
+            return span;
+          }),
+        );
+        return line;
+      }),
+    );
+  });
+
+  const section = document.getElementById('use');
+  const title = document.getElementById('usage-title');
+  if (section && title && code) revealSection(section, title, document.getElementById('usage-lead'), [code.parentElement ?? code]);
+</script>

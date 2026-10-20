@@ -19,6 +19,15 @@ export default defineConfig({
       subsets: ['latin', 'thai'],
       fallbacks: ['system-ui', 'sans-serif'],
     },
+    {
+      provider: fontProviders.google(),
+      name: 'JetBrains Mono',
+      cssVariable: '--font-jetbrains-mono',
+      weights: [400, 500],
+      styles: ['normal'],
+      subsets: ['latin'],
+      fallbacks: ['monospace'],
+    },
   ],
   vite: {
     plugins: [tailwindcss()],

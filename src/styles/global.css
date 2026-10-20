@@ -9,6 +9,7 @@
   --color-black: #000000;
 
   --font-sans: var(--font-bai-jamjuree);
+  --font-mono: var(--font-jetbrains-mono), var(--font-bai-jamjuree);
 
   --text-display: clamp(2.4rem, 1.3rem + 3.4vw, 4rem);
   --text-display--line-height: 1.08;
