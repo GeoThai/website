@@ -45,7 +45,14 @@ const data = 'https://github.com/GeoThai/data';
           </li>
         ))}
       </ul>
-      <Button href={data} class="max-md:hidden">Get the data</Button>
+      <span
+        id="header-cta"
+        data-collapsed={path === '/' ? '' : undefined}
+        inert={path === '/'}
+        class="flex max-w-48 overflow-hidden rounded-full transition-all duration-700 ease-pill data-collapsed:-ml-6 data-collapsed:max-w-0 data-collapsed:opacity-0 max-md:hidden motion-reduce:transition-none"
+      >
+        <Button href={data} class="whitespace-nowrap">Get the data</Button>
+      </span>
       <button
         id="menu-button"
         type="button"
@@ -116,6 +123,15 @@ const data = 'https://github.com/GeoThai/data';
     )
       setOpen(false);
   });
+  const cta = document.getElementById('header-cta');
+  const sentinel = document.querySelector('[data-cta-sentinel]');
+  if (cta && sentinel) {
+    new IntersectionObserver(([entry]) => {
+      const hide = entry?.isIntersecting ?? false;
+      cta.toggleAttribute('data-collapsed', hide);
+      cta.inert = hide;
+    }).observe(sentinel);
+  }
   matchMedia('(min-width: 48rem)').addEventListener('change', (e) => {
     if (e.matches) setOpen(false);
   });

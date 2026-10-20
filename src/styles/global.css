@@ -22,6 +22,8 @@
 
   --radius-panel: 28px;
 
+  --ease-pill: cubic-bezier(0.33, 0, 0.2, 1);
+
   --animate-fade-down: fade-down 0.5s ease-out backwards;
   @keyframes fade-down {
     from {
