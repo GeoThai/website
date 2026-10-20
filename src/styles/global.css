@@ -32,6 +32,10 @@
 }
 
 @layer base {
+  :root {
+    --header-height: --spacing(18);
+    --screen-below-header: calc(100dvh - var(--header-height));
+  }
   html {
     -webkit-text-size-adjust: 100%;
   }
