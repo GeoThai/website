@@ -18,6 +18,14 @@
   --text-postal--line-height: 1;
 
   --radius-panel: 28px;
+
+  --animate-fade-down: fade-down 0.5s ease-out backwards;
+  @keyframes fade-down {
+    from {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
 }
 
 @layer base {
