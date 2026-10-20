@@ -1,0 +1,20 @@
+---
+import { cn } from '@/utils/cn';
+
+type Props = { tone?: 'white' | 'mist' | 'black'; class?: string };
+
+const { tone = 'white', class: className } = Astro.props;
+---
+
+<article
+  class={cn(
+    'relative grid h-70 w-59 flex-none origin-bottom content-start gap-1.5 -mx-5.5 rounded-panel border px-6 py-6.5 text-left',
+    'max-md:h-47 max-md:w-29.5 max-md:-mx-4 max-md:rounded-3xl max-md:px-3 max-md:py-3.5',
+    tone === 'white' && 'border-line bg-white text-black',
+    tone === 'mist' && 'border-line bg-mist text-black',
+    tone === 'black' && 'border-black bg-black text-white',
+    className,
+  )}
+>
+  <slot />
+</article>

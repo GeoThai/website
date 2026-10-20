@@ -10,6 +10,13 @@
 
   --font-sans: var(--font-bai-jamjuree);
 
+  --text-display: clamp(2.4rem, 1.3rem + 3.4vw, 4rem);
+  --text-display--line-height: 1.08;
+  --text-card: 1.75rem;
+  --text-card--line-height: 1.2;
+  --text-postal: 3.4rem;
+  --text-postal--line-height: 1;
+
   --radius-panel: 28px;
 }
 

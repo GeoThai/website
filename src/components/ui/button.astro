@@ -12,10 +12,10 @@ type Props = (HTMLAttributes<'a'> | HTMLAttributes<'button'>) & {
 const { href, variant = 'primary', size = 'md', class: className, ...rest } = Astro.props;
 
 const classes = cn(
-  'inline-flex items-center justify-center gap-2 rounded-full border font-medium transition-[background-color,transform] active:scale-[0.97]',
-  variant === 'primary' && 'border-black bg-black text-white hover:bg-[#26282c]',
+  'inline-flex items-center justify-center gap-2 rounded-full border font-medium transition active:scale-97',
+  variant === 'primary' && 'border-black bg-black text-white hover:bg-black/85',
   variant === 'quiet' && 'border-line bg-transparent text-black hover:bg-mist',
-  size === 'sm' && 'min-h-10 px-[18px] text-sm',
+  size === 'sm' && 'min-h-10 px-4.5 text-sm',
   size === 'md' && 'min-h-12 px-6 text-base',
   className,
 );
