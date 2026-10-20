@@ -34,7 +34,7 @@ const n = (x: number) => x.toLocaleString('en');
   description={`${district.name_en} district in ${province.name_en}, code ${district.code}: ${n(rows.length)} subdistricts and postal codes ${postal.join(', ')}.`}
 >
   <section id="place" class="py-18 md:py-24">
-    <Container class="grid gap-14">
+    <Container class="grid grid-cols-1 gap-14">
       <div>
         <Breadcrumb
           trail={[
@@ -68,7 +68,7 @@ const n = (x: number) => x.toLocaleString('en');
         <ListFilter
           list="place-subdistricts"
           noun="subdistricts"
-          placeholder="Filter by name, code or postal code"
+          placeholder="Name or postal code"
           class="mt-5"
         />
         <ul id="place-subdistricts" class="mt-6 border-t border-line">

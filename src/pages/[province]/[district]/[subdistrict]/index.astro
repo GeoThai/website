@@ -41,7 +41,7 @@ const many = subdistrict.postal_codes.length > 1;
   description={`${subdistrict.name_en} subdistrict in ${district.name_en}, ${province.name_en}, code ${subdistrict.code}, postal code ${subdistrict.postal_codes.join(', ')}.`}
 >
   <section id="place" class="py-18 md:py-24">
-    <Container class="grid gap-14">
+    <Container class="grid grid-cols-1 gap-14">
       <div>
         <Breadcrumb
           trail={[

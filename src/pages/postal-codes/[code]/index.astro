@@ -42,7 +42,7 @@ const noun = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : m
   description={`Postal code ${code} covers ${noun(rows.length, 'subdistrict', 'subdistricts')} in ${where}: ${rows.map((r) => r.name_en).join(', ')}.`}
 >
   <section id="place" class="py-18 md:py-24">
-    <Container class="grid gap-14">
+    <Container class="grid grid-cols-1 gap-14">
       <div>
         <Breadcrumb
           trail={[
@@ -74,7 +74,7 @@ const noun = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : m
           <ListFilter
             list="place-subdistricts"
             noun="subdistricts"
-            placeholder="Filter by name or code"
+            placeholder="Name or code"
             class="mt-5"
           />
         )}

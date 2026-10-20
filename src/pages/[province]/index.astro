@@ -43,7 +43,7 @@ const totals = [
   description={`${province.name_en} province, code ${province.code}: ${n(rows.length)} districts, ${n(inProvince.length)} subdistricts and ${n(postal.length)} postal codes, checked against official sources.`}
 >
   <section id="place" class="py-18 md:py-24">
-    <Container class="grid gap-14">
+    <Container class="grid grid-cols-1 gap-14">
       <div>
         <Breadcrumb
           trail={[
@@ -66,7 +66,7 @@ const totals = [
         <ListFilter
           list="place-districts"
           noun="districts"
-          placeholder="Filter by name, code or postal code"
+          placeholder="Name or postal code"
           class="mt-5"
         />
         <ul id="place-districts" class="mt-6 border-t border-line">

@@ -30,12 +30,7 @@ const n = (x: number) => x.toLocaleString('en');
         All {rows.length} provinces, sorted by code. Each one lists its districts, subdistricts and
         postal codes.
       </p>
-      <ListFilter
-        list="provinces-list"
-        noun="provinces"
-        placeholder="Filter by name or code"
-        class="mt-10"
-      />
+      <ListFilter list="provinces-list" noun="provinces" placeholder="Name or code" class="mt-10" />
       <ul id="provinces-list" class="mt-6 border-t border-line">
         {rows.map((p) => (
           <li class="border-line border-b" data-keys={`${p.code} ${p.name_th} ${p.name_en}`}>
