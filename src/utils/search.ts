@@ -7,7 +7,7 @@ const norm = (s: string) =>
     .normalize('NFC')
     .replaceAll(/[\s\-']/g, '');
 
-export function searchRows(rows: Row[], query: string, limit = 8): Row[] {
+export function searchRows(rows: Row[], query: string, limit = Infinity): Row[] {
   const q = norm(query);
   if (!q) return [];
   const exact: Row[] = [];

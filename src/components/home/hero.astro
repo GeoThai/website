@@ -37,7 +37,7 @@ const cards = [
         aria-expanded="false"
         aria-controls="q-list"
       />
-      <ul id="q-list" role="listbox" hidden class="absolute inset-x-0 top-16 z-20 rounded-3xl border border-line bg-white p-1.5"></ul>
+      <ul id="q-list" role="listbox" hidden class="absolute inset-x-0 top-16 z-20 max-h-96 overflow-y-auto overscroll-contain rounded-3xl border border-line bg-white p-1.5"></ul>
       <p id="q-status" aria-live="polite" class="mt-2.5 min-h-6 text-center text-sm text-slate"></p>
     </div>
 
@@ -123,38 +123,58 @@ const cards = [
   let results: Row[] = [];
   let active = -1;
 
+  const PAGE = 60;
+
+  function option(r: Row, i: number) {
+    const li = document.createElement('li');
+    li.id = `q-${i}`;
+    li.dataset.index = String(i);
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', 'false');
+    li.className =
+      'flex cursor-pointer items-center justify-between gap-4 rounded-2xl px-3.5 py-2.5 hover:bg-mist aria-selected:bg-mist';
+    const text = document.createElement('span');
+    const name = document.createElement('span');
+    name.className = 'block font-semibold';
+    name.textContent = `${r[1]}  ${r[2]}`;
+    const path = document.createElement('span');
+    path.className = 'block text-sm text-slate';
+    path.textContent = `${r[3]}, ${r[5]} · ${r[0]}`;
+    text.append(name, path);
+    const postal = document.createElement('span');
+    postal.className = 'shrink-0 text-slate tabular-nums';
+    postal.textContent = r[7].join(', ');
+    li.append(text, postal);
+    return li;
+  }
+
+  // Thousands of matches are possible, so options are added a page at a time as the list scrolls.
+  function grow(until: number) {
+    if (!list) return;
+    const from = list.children.length;
+    if (until <= from) return;
+    const to = Math.min(results.length, Math.max(until, from + PAGE));
+    list.append(...results.slice(from, to).map((r, k) => option(r, from + k)));
+  }
+
+  function select(i: number) {
+    list?.querySelector('[aria-selected="true"]')?.setAttribute('aria-selected', 'false');
+    active = i;
+    if (i >= 0) grow(i + 1);
+    const li = document.getElementById(`q-${i}`);
+    li?.setAttribute('aria-selected', 'true');
+    li?.scrollIntoView({ block: 'nearest' });
+    input?.setAttribute('aria-activedescendant', li ? li.id : '');
+  }
+
   function render() {
     if (!input || !list) return;
-    list.replaceChildren(
-      ...results.map((r, i) => {
-        const li = document.createElement('li');
-        li.id = `q-${i}`;
-        li.setAttribute('role', 'option');
-        li.setAttribute('aria-selected', String(i === active));
-        li.className =
-          'flex cursor-pointer items-center justify-between gap-4 rounded-2xl px-3.5 py-2.5 hover:bg-mist aria-selected:bg-mist';
-        const text = document.createElement('span');
-        const name = document.createElement('span');
-        name.className = 'block font-semibold';
-        name.textContent = `${r[1]}  ${r[2]}`;
-        const path = document.createElement('span');
-        path.className = 'block text-sm text-slate';
-        path.textContent = `${r[3]}, ${r[5]} · ${r[0]}`;
-        text.append(name, path);
-        const postal = document.createElement('span');
-        postal.className = 'shrink-0 text-slate tabular-nums';
-        postal.textContent = r[7].join(', ');
-        li.append(text, postal);
-        li.addEventListener('mousedown', (e) => {
-          e.preventDefault();
-          pick(i);
-        });
-        return li;
-      }),
-    );
+    list.replaceChildren();
+    grow(PAGE);
+    list.scrollTop = 0;
     list.hidden = results.length === 0;
     input.setAttribute('aria-expanded', String(results.length > 0));
-    input.setAttribute('aria-activedescendant', active >= 0 ? `q-${active}` : '');
+    select(results.length ? 0 : -1);
   }
 
   function pick(i: number) {
@@ -162,7 +182,6 @@ const cards = [
     if (!r || !input || !status) return;
     input.value = r[1];
     results = [];
-    active = -1;
     render();
     status.textContent = `${r[1]} (${r[2]}), ${r[3]}, ${r[5]}. Postal code ${r[7].join(', ')}.`;
     deal(r);
@@ -182,22 +201,35 @@ const cards = [
   }
   void loadRows();
 
+  list?.addEventListener(
+    'scroll',
+    () => {
+      if (list.scrollTop + list.clientHeight > list.scrollHeight - 200) grow(list.children.length + PAGE);
+    },
+    { passive: true },
+  );
+  list?.addEventListener('mousedown', (e) => {
+    const li = (e.target as Element).closest<HTMLElement>('[role="option"]');
+    if (!li) return;
+    e.preventDefault();
+    pick(Number(li.dataset.index));
+  });
+
   input?.addEventListener('input', () => {
-    results = rows.length ? searchRows(rows, input.value) : [];
-    active = results.length ? 0 : -1;
+    if (!rows.length || !status) return;
+    results = searchRows(rows, input.value);
     render();
-    if (input.value && rows.length && !results.length && status) {
-      status.textContent = 'No place matches. Try the Thai or English name, or a postal code.';
-    }
+    if (!input.value) return;
+    status.textContent = results.length
+      ? `${results.length.toLocaleString('en')} ${results.length === 1 ? 'place matches' : 'places match'}.`
+      : 'No place matches. Try the Thai or English name, or a postal code.';
   });
   input?.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowDown' && results.length) {
-      active = (active + 1) % results.length;
-      render();
+      select((active + 1) % results.length);
       e.preventDefault();
     } else if (e.key === 'ArrowUp' && results.length) {
-      active = (active - 1 + results.length) % results.length;
-      render();
+      select((active - 1 + results.length) % results.length);
       e.preventDefault();
     } else if (e.key === 'Enter') {
       pick(Math.max(active, 0));
