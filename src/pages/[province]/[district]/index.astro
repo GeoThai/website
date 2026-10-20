@@ -25,6 +25,7 @@ const { subdistricts } = await loadData();
 const rows = subdistricts.filter((s) => s.district_code === district.code);
 const postal = [...new Set(rows.flatMap((s) => s.postal_codes))].sort();
 const provinceHref = `/${areaSlug(province)}/`;
+const districtHref = `${provinceHref}${areaSlug(district)}/`;
 const n = (x: number) => x.toLocaleString('en');
 ---
 
@@ -73,15 +74,22 @@ const n = (x: number) => x.toLocaleString('en');
         <ul id="place-subdistricts" class="mt-6 border-t border-line">
           {rows.map((s) => (
             <li
+              class="border-line border-b"
               data-keys={`${s.code} ${s.name_th} ${s.name_en} ${s.postal_codes.join(' ')}`}
-              class="grid gap-1 border-line border-b px-3 py-4 md:grid-cols-12 md:items-baseline md:gap-6"
             >
-              <span class="font-mono text-slate text-sm tabular-nums md:col-span-2">{s.code}</span>
-              <span class="font-semibold md:col-span-4">{s.name_th}</span>
-              <span class="text-slate md:col-span-3">{s.name_en}</span>
-              <span class="font-mono text-slate text-sm tabular-nums md:col-span-3">
-                {s.postal_codes.join(' ')}
-              </span>
+              <a
+                href={`${districtHref}${areaSlug(s)}/`}
+                class="grid gap-1 rounded-2xl px-3 py-4 transition-colors hover:bg-mist md:grid-cols-12 md:items-baseline md:gap-6"
+              >
+                <span class="font-mono text-slate text-sm tabular-nums md:col-span-2">
+                  {s.code}
+                </span>
+                <span class="font-semibold md:col-span-4">{s.name_th}</span>
+                <span class="text-slate md:col-span-3">{s.name_en}</span>
+                <span class="font-mono text-slate text-sm tabular-nums md:col-span-3">
+                  {s.postal_codes.join(' ')}
+                </span>
+              </a>
             </li>
           ))}
         </ul>
