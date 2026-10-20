@@ -77,8 +77,7 @@ const data = 'https://github.com/GeoThai/data';
     <nav
       id="menu-panel"
       aria-label="Menu"
-      hidden
-      class="absolute inset-x-5 top-full mt-2 grid animate-fade-down gap-6 rounded-panel border border-line bg-white p-6 motion-reduce:animate-none md:hidden"
+      class="invisible absolute inset-x-5 top-full mt-2 grid origin-top -translate-y-2 scale-98 gap-6 rounded-panel border border-line bg-white/70 p-6 opacity-0 backdrop-blur-2xl backdrop-saturate-150 transition-all duration-300 ease-pill data-open:visible data-open:translate-y-0 data-open:scale-100 data-open:opacity-100 motion-reduce:transition-none md:hidden"
     >
       <ul class="grid">
         {links.map((l) => (
@@ -102,25 +101,22 @@ const data = 'https://github.com/GeoThai/data';
   const button = document.getElementById('menu-button');
   const panel = document.getElementById('menu-panel');
 
+  const isOpen = () => button?.getAttribute('aria-expanded') === 'true';
   const setOpen = (open: boolean) => {
     if (!button || !panel) return;
     button.setAttribute('aria-expanded', String(open));
-    panel.hidden = !open;
+    panel.toggleAttribute('data-open', open);
   };
 
-  button?.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+  button?.addEventListener('click', () => setOpen(!isOpen()));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && panel && !panel.hidden) {
+    if (e.key === 'Escape' && isOpen()) {
       setOpen(false);
       button?.focus();
     }
   });
   document.addEventListener('click', (e) => {
-    if (
-      panel &&
-      !panel.hidden &&
-      !document.getElementById('site-header')?.contains(e.target as Node)
-    )
+    if (isOpen() && !document.getElementById('site-header')?.contains(e.target as Node))
       setOpen(false);
   });
   const cta = document.getElementById('header-cta');
