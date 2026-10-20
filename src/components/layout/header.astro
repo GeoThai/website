@@ -1,17 +1,122 @@
 ---
+import { Icon } from 'astro-icon/components';
+
 import Logo from '@/assets/logo.svg';
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
+
+const path = Astro.url.pathname;
+const links = [
+  {
+    href: '/provinces/',
+    label: 'Provinces',
+    active: path === '/provinces/' || /^\/\d{2}-/.test(path),
+  },
+  { href: '/postal-codes/', label: 'Postal codes', active: path.startsWith('/postal-codes/') },
+  { href: '/docs/', label: 'Docs', active: path.startsWith('/docs/') },
+  { href: '/changelog/', label: 'Changelog', active: path.startsWith('/changelog/') },
+];
+const data = 'https://github.com/GeoThai/data';
 ---
 
 <header
-  class="sticky top-0 z-20 h-(--header-height) animate-fade-down border-b border-line bg-white/90 backdrop-blur-md motion-reduce:animate-none"
+  id="site-header"
+  class="sticky top-0 z-20 h-(--header-height) animate-fade-down pt-4 motion-reduce:animate-none"
 >
-  <Container as="nav" aria-label="Main" class="flex h-full items-center justify-between gap-6">
-    <a href="/" class="-ml-3">
-      <span class="sr-only">GeoThai home</span>
-      <Logo class="h-10 w-auto" aria-hidden="true" />
-    </a>
-    <Button href="https://github.com/GeoThai/data" size="sm">Get the data</Button>
+  <Container class="relative h-16">
+    <nav
+      aria-label="Main"
+      class="flex h-full items-center gap-6 rounded-full bg-white/50 py-2 pr-2 pl-5 backdrop-blur-xl"
+    >
+      <a href="/" class="mr-auto">
+        <span class="sr-only">GeoThai home</span>
+        <Logo class="h-10 w-auto" aria-hidden="true" />
+      </a>
+      <ul class="flex items-center gap-1 max-md:hidden">
+        {links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              aria-current={l.active ? 'page' : undefined}
+              class="rounded-full px-3.5 py-2 text-slate text-sm transition-colors hover:text-black aria-[current=page]:text-black"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <Button href={data} class="max-md:hidden">Get the data</Button>
+      <button
+        id="menu-button"
+        type="button"
+        aria-expanded="false"
+        aria-controls="menu-panel"
+        class="group inline-flex size-12 items-center justify-center rounded-full transition hover:bg-mist active:scale-97 md:hidden"
+      >
+        <span class="sr-only">Menu</span>
+        <Icon
+          name="solar:hamburger-menu-linear"
+          class="size-6 group-aria-expanded:hidden"
+          aria-hidden="true"
+        />
+        <Icon
+          name="solar:close-linear"
+          class="hidden size-6 group-aria-expanded:block"
+          aria-hidden="true"
+        />
+      </button>
+    </nav>
+
+    <nav
+      id="menu-panel"
+      aria-label="Menu"
+      hidden
+      class="absolute inset-x-5 top-full mt-2 grid animate-fade-down gap-6 rounded-panel border border-line bg-white p-6 motion-reduce:animate-none md:hidden"
+    >
+      <ul class="grid">
+        {links.map((l) => (
+          <li class="border-line border-b last:border-b-0">
+            <a
+              href={l.href}
+              aria-current={l.active ? 'page' : undefined}
+              class="block py-3.5 font-semibold text-2xl text-slate tracking-tight aria-[current=page]:text-black"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <Button href={data}>Get the data</Button>
+    </nav>
   </Container>
 </header>
+
+<script>
+  const button = document.getElementById('menu-button');
+  const panel = document.getElementById('menu-panel');
+
+  const setOpen = (open: boolean) => {
+    if (!button || !panel) return;
+    button.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+  };
+
+  button?.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel && !panel.hidden) {
+      setOpen(false);
+      button?.focus();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (
+      panel &&
+      !panel.hidden &&
+      !document.getElementById('site-header')?.contains(e.target as Node)
+    )
+      setOpen(false);
+  });
+  matchMedia('(min-width: 48rem)').addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
+</script>

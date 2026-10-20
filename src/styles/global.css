@@ -33,7 +33,7 @@
 
 @layer base {
   :root {
-    --header-height: --spacing(18);
+    --header-height: --spacing(20);
     --screen-below-header: calc(100dvh - var(--header-height));
   }
   html {
