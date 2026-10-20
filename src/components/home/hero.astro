@@ -3,12 +3,22 @@ import SymbolWhite from '@/assets/symbol-white.svg';
 import HandCard from '@/components/home/hand-card.astro';
 import Container from '@/components/ui/container.astro';
 import Input from '@/components/ui/input.astro';
+import { loadData } from '@/lib/data';
+
+const START = '100101';
+const { provinces, districts, subdistricts } = await loadData();
+
+const sub = subdistricts.find((s) => s.code === START);
+const dist = districts.find((d) => d.code === sub?.district_code);
+const prov = provinces.find((p) => p.code === sub?.province_code);
+
+if (!sub || !dist || !prov) throw new Error(`hero: subdistrict ${START} or its parents are missing from the data`);
 
 const cards = [
-  { level: 'Province', th: 'สุราษฎร์ธานี', en: 'Surat Thani', code: '84', f: ['5', '6', 'pc'], fan: '-rotate-9 translate-y-7' },
-  { level: 'District', th: 'เกาะพะงัน', en: 'Ko Pha-ngan', code: '8405', f: ['3', '4', 'dc'], fan: '-rotate-3 translate-y-1.5' },
-  { level: 'Subdistrict', th: 'เกาะเต่า', en: 'Ko Tao', code: '840503', f: ['1', '2', '0'], fan: 'rotate-3 translate-y-1.5' },
-] as const;
+  { level: 'Province', th: prov.name_th, en: prov.name_en, code: prov.code, f: ['5', '6', 'pc'], fan: '-rotate-9 translate-y-7' },
+  { level: 'District', th: dist.name_th, en: dist.name_en, code: dist.code, f: ['3', '4', 'dc'], fan: '-rotate-3 translate-y-1.5' },
+  { level: 'Subdistrict', th: sub.name_th, en: sub.name_en, code: sub.code, f: ['1', '2', '0'], fan: 'rotate-3 translate-y-1.5' },
+];
 ---
 
 <section id="top" aria-labelledby="hero-title" class="overflow-hidden pt-6 pb-16 md:pt-14 md:pb-32">
@@ -48,11 +58,11 @@ const cards = [
         cards.map((c) => (
           <HandCard tone={c.level === 'Province' ? 'mist' : 'white'} class={c.fan}>
             <p class="mb-4.5 text-sm text-slate max-md:mb-2">{c.level}</p>
-            <p data-f={c.f[0]} class="text-card font-semibold tracking-tight max-md:text-base">
+            <p data-f={c.f[0]} class="text-card font-semibold tracking-tight wrap-break-word max-md:text-base">
               {c.th}
             </p>
-            <p data-f={c.f[1]} class="text-slate max-md:text-sm">{c.en}</p>
-            <p data-f={c.f[2]} class="absolute bottom-5.5 left-6 font-medium text-slate tabular-nums max-md:bottom-3.5 max-md:left-3.5 max-md:text-sm">
+            <p data-f={c.f[1]} class="line-clamp-2 text-slate max-md:text-sm">{c.en}</p>
+            <p data-f={c.f[2]} class="mt-auto font-medium text-slate tabular-nums max-md:text-sm">
               {c.code}
             </p>
           </HandCard>
@@ -62,9 +72,10 @@ const cards = [
         <p class="mb-4.5 text-sm text-white/65 max-md:mb-2">Postal code</p>
         <p
           data-f="7"
+          data-many={sub.postal_codes.length > 1 ? '' : undefined}
           class="text-postal font-semibold tracking-tight tabular-nums wrap-anywhere data-many:text-4xl data-many:leading-tight max-md:text-2xl max-md:data-many:text-xl"
         >
-          84360
+          {sub.postal_codes.join(' ')}
         </p>
         <SymbolWhite class="absolute right-5.5 bottom-5.5 h-auto w-7 max-md:right-3.5 max-md:bottom-3.5 max-md:w-5" aria-hidden="true" />
       </HandCard>
