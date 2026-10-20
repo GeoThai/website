@@ -1,43 +1,90 @@
-# Astro Starter Kit: Minimal
+# GeoThai website
+
+The website for [GeoThai/data](https://github.com/GeoThai/data): every province, district, subdistrict and postal code of Thailand, one page each.
+
+Address: [geothai.fasu.dev](https://geothai.fasu.dev).
+
+## What it builds
+
+| Pages                 |   Count | Example                                                |
+| --------------------- | ------: | ------------------------------------------------------ |
+| Home, Docs, Changelog |       3 | `/docs/`                                               |
+| Provinces             |  1 + 77 | `/84-surat-thani/`                                     |
+| Districts             |     928 | `/84-surat-thani/8405-ko-pha-ngan/`                    |
+| Subdistricts          |   7,436 | `/84-surat-thani/8405-ko-pha-ngan/840501-ko-pha-ngan/` |
+| Postal codes          | 1 + 976 | `/postal-codes/84280/`                                 |
+
+Every page is static HTML. The build also writes `data/search.json` for the search on the home page, a sitemap and JSON-LD for search engines.
+
+## Requirements
+
+- [Bun](https://bun.sh) 1.4.2 or later
+- Internet access during the build. The build downloads the data from GitHub.
+
+## Get started
 
 ```sh
-bun create astro@latest -- --template minimal
+bun install
+bun run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The dev server runs at `http://localhost:4321`. Every URL ends with `/`, so open `/provinces/`, not `/provinces`.
 
-## 🚀 Project Structure
+## Commands
 
-Inside of your Astro project, you'll see the following folders and files:
+| Command             | What it does                                      |
+| ------------------- | ------------------------------------------------- |
+| `bun run dev`       | Starts the dev server                             |
+| `bun run build`     | Builds the site into `dist/`                      |
+| `bun run preview`   | Serves `dist/` to check a build                   |
+| `bun run check`     | Runs Biome: format, lint and Tailwind class rules |
+| `bun run check:fix` | Runs Biome and applies the safe fixes             |
+| `bun run typecheck` | Runs `astro check`                                |
+| `bun run test`      | Runs the unit tests in `src/utils/`               |
+
+Run `check`, `typecheck` and `test` before you commit.
+
+## Data
+
+The site shows one release of GeoThai/data. The release is in `data.version`:
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+v2026.10.20
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+To move the site to a newer release:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+1. Write the new release tag in `data.version`.
+2. Run `bun run build`.
 
-Any static assets, like images, can be placed in the `public/` directory.
+The build reads the JSON files, `datapackage.json` and `CHANGELOG.md` of that release from `raw.githubusercontent.com`. If a file is missing, the build stops with the file name and the HTTP status.
 
-## 🧞 Commands
+## Project structure
 
-All commands are run from the root of the project, from a terminal:
+```text
+src/
+├── components/
+│   ├── home/      sections of the home page
+│   ├── layout/    header and footer
+│   ├── place/     parts of the area pages: heading, totals, list filter, source line
+│   └── ui/        button, input, card, container, code blocks
+├── layouts/       Base: head tags, header, footer, smooth scroll
+├── lib/           data loading, URL helpers, motion
+├── pages/         one file per route
+├── styles/        Tailwind theme: colors, type, radius, motion
+└── utils/         pure functions with tests: slugs, search, formatting, JSON-LD
+```
 
-| Command               | Action                                           |
-| :-------------------- | :----------------------------------------------- |
-| `bun install`         | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
+## Stack
 
-## 👀 Want to learn more?
+- [Astro](https://astro.build) for static pages
+- [Tailwind CSS](https://tailwindcss.com) v4 for styles
+- [GSAP](https://gsap.com) and [Lenis](https://lenis.darkroom.engineering) for motion. If the system asks for reduced motion, both stop.
+- [Biome](https://biomejs.dev) for format and lint
+- Fonts: Bai Jamjuree and JetBrains Mono
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## License
+
+The code, the GeoThai name and the logo are all rights reserved. See [LICENSE](./LICENSE).
+
+The data is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). When you use the data, credit GeoThai.
