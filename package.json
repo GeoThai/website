@@ -5,11 +5,13 @@
   "scripts": {
     "astro": "astro",
     "build": "astro build",
+    "check": "biome check",
+    "check:fix": "biome check --write",
     "dev": "astro dev",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
+    "format": "biome format --write",
+    "format:check": "biome format",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --write",
     "preview": "astro preview",
     "test": "bun test",
     "typecheck": "astro check"
@@ -25,15 +27,13 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.11",
+    "@biomejs/biome": "2.5.15",
     "@iconify-json/solar": "^1.2.13",
     "@types/bun": "^1.4.3",
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
-    "oxlint-tsgolint": "^7.0.2004",
     "typescript": "^6.0.3"
   },
+  "packageManager": "bun@1.4.2",
   "engines": {
     "node": ">=22.22.0"
-  },
-  "packageManager": "bun@1.4.2"
+  }
 }

@@ -9,7 +9,12 @@ import { parseChangelog } from '@/utils/changelog';
 
 const releases = parseChangelog(await loadChangelog());
 const longDate = (iso: string) =>
-  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 const OPEN_UP_TO = 20;
 
 const { provinces, districts, subdistricts } = await loadData();
@@ -23,73 +28,86 @@ const download = (version: string, kind: 'json' | 'csv') =>
   `https://github.com/GeoThai/data/releases/download/${version}/geothai-${kind}.zip`;
 ---
 
-<Base title="Changelog · GeoThai" description="Every GeoThai data release, newest first, with each area that changed.">
+<Base
+  title="Changelog · GeoThai"
+  description="Every GeoThai data release, newest first, with each area that changed."
+>
   <section id="changelog" aria-labelledby="changelog-title" class="py-18 md:py-24">
     <Container class="grid gap-8 md:grid-cols-5 md:gap-20">
       <div class="md:col-span-2">
-        <h1 id="changelog-title" class="text-title font-semibold tracking-tight text-balance">Changelog</h1>
+        <h1 id="changelog-title" class="text-title font-semibold tracking-tight text-balance">
+          Changelog
+        </h1>
         <p id="changelog-lead" class="mt-5 max-w-xl text-xl leading-normal text-pretty text-slate">
-          Every data release, newest first. A release comes only when an area, a name or a postal code changes.
+          Every data release, newest first. A release comes only when an area, a name or a postal
+          code changes.
         </p>
       </div>
       <ol id="releases" class="grid gap-14 md:col-span-3">
-        {
-          releases.map((r) => (
-            <li class="border-t border-line pt-8">
-              <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-                <h2 class="font-mono text-2xl font-medium tabular-nums">{r.version}</h2>
-                <a href={`https://github.com/GeoThai/data/releases/tag/${r.version}`} class="text-sm text-slate underline-offset-4 hover:text-black hover:underline">
-                  Release on GitHub
-                </a>
-              </div>
-              <time datetime={r.date} class="mt-1 block text-sm text-slate">
-                {longDate(r.date)}
-              </time>
-              {r.notes.map((n) => (
-                <p class="mt-4 text-pretty">{n}</p>
-              ))}
-              {r.version === DATA_VERSION && (
-                <dl class="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-line sm:grid-cols-4">
-                  {totals.map((t) => (
-                    <div class="bg-mist px-5 py-4">
-                      <dt class="text-sm text-slate">{t.label}</dt>
-                      <dd class="text-2xl font-semibold tracking-tight tabular-nums">{t.n.toLocaleString('en')}</dd>
-                    </div>
+        {releases.map((r) => (
+          <li class="border-line border-t pt-8">
+            <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <h2 class="font-medium font-mono text-2xl tabular-nums">{r.version}</h2>
+              <a
+                href={`https://github.com/GeoThai/data/releases/tag/${r.version}`}
+                class="text-slate text-sm underline-offset-4 hover:text-black hover:underline"
+              >
+                Release on GitHub
+              </a>
+            </div>
+            <time datetime={r.date} class="mt-1 block text-slate text-sm">
+              {longDate(r.date)}
+            </time>
+            {r.notes.map((n) => (
+              <p class="mt-4 text-pretty">{n}</p>
+            ))}
+            {r.version === DATA_VERSION && (
+              <dl class="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-line sm:grid-cols-4">
+                {totals.map((t) => (
+                  <div class="bg-mist px-5 py-4">
+                    <dt class="text-slate text-sm">{t.label}</dt>
+                    <dd class="font-semibold text-2xl tabular-nums tracking-tight">
+                      {t.n.toLocaleString('en')}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {r.sections.map((s) => (
+              <details open={s.changes.length <= OPEN_UP_TO} class="group mt-6 rounded-3xl bg-mist">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium">
+                  <span>{s.label}</span>
+                  <span class="flex items-center gap-3 text-slate text-sm tabular-nums">
+                    {s.count.toLocaleString('en')} {s.count === 1 ? 'area' : 'areas'}
+                    <Icon
+                      name="solar:alt-arrow-down-linear"
+                      class="size-4 transition-transform group-open:rotate-180"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </summary>
+                <ul class="grid gap-1.5 px-5 pb-5 font-mono text-sm">
+                  {s.changes.map((c) => (
+                    <li class="flex gap-4">
+                      <span class="shrink-0 text-slate tabular-nums">{c.code}</span>
+                      <span class="wrap-anywhere">{c.detail}</span>
+                    </li>
                   ))}
-                </dl>
-              )}
-              {r.sections.map((s) => (
-                <details open={s.changes.length <= OPEN_UP_TO} class="group mt-6 rounded-3xl bg-mist">
-                  <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium">
-                    <span>{s.label}</span>
-                    <span class="flex items-center gap-3 text-sm text-slate tabular-nums">
-                      {s.count.toLocaleString('en')} {s.count === 1 ? 'area' : 'areas'}
-                      <Icon name="solar:alt-arrow-down-linear" class="size-4 transition-transform group-open:rotate-180" aria-hidden="true" />
-                    </span>
-                  </summary>
-                  <ul class="grid gap-1.5 px-5 pb-5 font-mono text-sm">
-                    {s.changes.map((c) => (
-                      <li class="flex gap-4">
-                        <span class="shrink-0 text-slate tabular-nums">{c.code}</span>
-                        <span class="wrap-anywhere">{c.detail}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              ))}
-              <div class="mt-6 flex flex-wrap gap-3">
-                <Button href={download(r.version, 'json')} variant="quiet" size="sm">
-                  <Icon name="solar:download-minimalistic-linear" class="size-4" aria-hidden="true" />
-                  JSON
-                </Button>
-                <Button href={download(r.version, 'csv')} variant="quiet" size="sm">
-                  <Icon name="solar:download-minimalistic-linear" class="size-4" aria-hidden="true" />
-                  CSV
-                </Button>
-              </div>
-            </li>
-          ))
-        }
+                </ul>
+              </details>
+            ))}
+            <div class="mt-6 flex flex-wrap gap-3">
+              <Button href={download(r.version, 'json')} variant="quiet" size="sm">
+                <Icon name="solar:download-minimalistic-linear" class="size-4" aria-hidden="true" />
+                JSON
+              </Button>
+              <Button href={download(r.version, 'csv')} variant="quiet" size="sm">
+                <Icon name="solar:download-minimalistic-linear" class="size-4" aria-hidden="true" />
+                CSV
+              </Button>
+            </div>
+          </li>
+        ))}
       </ol>
     </Container>
   </section>
@@ -101,5 +119,6 @@ const download = (version: string, kind: 'json' | 'csv') =>
   const section = document.getElementById('changelog');
   const title = document.getElementById('changelog-title');
   const list = document.getElementById('releases');
-  if (section && title && list) revealSection(section, title, document.getElementById('changelog-lead'), [...list.children]);
+  if (section && title && list)
+    revealSection(section, title, document.getElementById('changelog-lead'), [...list.children]);
 </script>

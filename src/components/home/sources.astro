@@ -49,22 +49,22 @@ const sources = [
 
 <section id="checked" aria-labelledby="sources-title" class="py-18 md:py-36">
   <Container>
-    <h2 id="sources-title" class="max-w-2xl text-title font-semibold tracking-tight text-balance">Seven sources read every value.</h2>
+    <h2 id="sources-title" class="max-w-2xl text-title font-semibold tracking-tight text-balance">
+      Seven sources read every value.
+    </h2>
     <p id="sources-lead" class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
       When they disagree, a person reviews the difference and decides before the data ships.
     </p>
     <ul id="sources" class="mt-12 border-t border-line">
-      {
-        sources.map((s) => (
-          <li class="grid gap-1 border-b border-line py-5.5 md:grid-cols-12 md:gap-6">
-            <a href={s.href} class="font-semibold underline-offset-4 hover:underline md:col-span-4">
-              {s.name}
-            </a>
-            <span class="text-slate md:col-span-5">{s.gives}</span>
-            <span class="text-slate md:col-span-3">{s.role}</span>
-          </li>
-        ))
-      }
+      {sources.map((s) => (
+        <li class="grid gap-1 border-line border-b py-5.5 md:grid-cols-12 md:gap-6">
+          <a href={s.href} class="font-semibold underline-offset-4 hover:underline md:col-span-4">
+            {s.name}
+          </a>
+          <span class="text-slate md:col-span-5">{s.gives}</span>
+          <span class="text-slate md:col-span-3">{s.role}</span>
+        </li>
+      ))}
     </ul>
   </Container>
 </section>
@@ -75,5 +75,6 @@ const sources = [
   const section = document.getElementById('checked');
   const title = document.getElementById('sources-title');
   const list = document.getElementById('sources');
-  if (section && title && list) revealSection(section, title, document.getElementById('sources-lead'), [...list.children]);
+  if (section && title && list)
+    revealSection(section, title, document.getElementById('sources-lead'), [...list.children]);
 </script>

@@ -21,14 +21,12 @@ const classes = cn(
 );
 ---
 
-{
-  href ? (
-    <a href={href} class={classes} {...(rest as HTMLAttributes<'a'>)}>
-      <slot />
-    </a>
-  ) : (
-    <button type="button" class={classes} {...(rest as HTMLAttributes<'button'>)}>
-      <slot />
-    </button>
-  )
-}
+{href ? (
+  <a href={href} class={classes} {...(rest as HTMLAttributes<'a'>)}>
+    <slot />
+  </a>
+) : (
+  <button type="button" class={classes} {...(rest as HTMLAttributes<'button'>)}>
+    <slot />
+  </button>
+)}

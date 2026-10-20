@@ -6,11 +6,19 @@ import Base from '@/layouts/base.astro';
 ---
 
 <Base title="Page not found · GeoThai" description="This page does not exist on GeoThai.">
-  <Container class="grid min-h-(--screen-below-header) content-center justify-items-center py-12 text-center">
+  <Container
+    class="grid min-h-(--screen-below-header) content-center justify-items-center py-12 text-center"
+  >
     <SymbolBlack id="lost-pin" class="h-auto w-16" aria-hidden="true" />
-    <h1 id="lost-title" class="mt-8 max-w-xl text-display font-semibold tracking-tight text-balance">This page is not on the map.</h1>
+    <h1
+      id="lost-title"
+      class="mt-8 max-w-xl text-display font-semibold tracking-tight text-balance"
+    >
+      This page is not on the map.
+    </h1>
     <p id="lost-lead" class="mt-5 max-w-xl text-xl leading-normal text-pretty text-slate">
-      The link may be old or mistyped. Every province, district and subdistrict is still one search away.
+      The link may be old or mistyped. Every province, district and subdistrict is still one search
+      away.
     </p>
     <div id="lost-actions" class="mt-12 flex flex-wrap justify-center gap-3">
       <Button href="/">Search a place</Button>

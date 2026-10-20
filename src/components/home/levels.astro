@@ -6,33 +6,55 @@ const { provinces, districts, subdistricts } = await loadData();
 const { province: prov, district: dist, subdistrict: sub } = await startPlace();
 
 const rows = [
-  { id: 'province', code: prov.code, name: prov.name_en, count: provinces.length, noun: 'provinces' },
-  { id: 'district', code: dist.code, name: dist.name_en, count: districts.length, noun: 'districts' },
-  { id: 'subdistrict', code: sub.code, name: sub.name_en, count: subdistricts.length, noun: 'subdistricts' },
+  {
+    id: 'province',
+    code: prov.code,
+    name: prov.name_en,
+    count: provinces.length,
+    noun: 'provinces',
+  },
+  {
+    id: 'district',
+    code: dist.code,
+    name: dist.name_en,
+    count: districts.length,
+    noun: 'districts',
+  },
+  {
+    id: 'subdistrict',
+    code: sub.code,
+    name: sub.name_en,
+    count: subdistricts.length,
+    noun: 'subdistricts',
+  },
 ];
 ---
 
 <section id="data" aria-labelledby="levels-title" class="py-18 md:py-36">
   <Container class="grid gap-8 md:grid-cols-5 md:gap-20">
     <div class="md:col-span-2">
-      <h2 id="levels-title" class="max-w-md text-title font-semibold tracking-tight text-balance">Three levels, one code.</h2>
+      <h2 id="levels-title" class="max-w-md text-title font-semibold tracking-tight text-balance">
+        Three levels, one code.
+      </h2>
       <p id="levels-lead" class="mt-5 max-w-xl text-xl leading-normal text-pretty text-slate">
         Each code holds its parents. Read it from the left and you never need a second lookup.
       </p>
     </div>
     <ol id="levels" class="border-t border-line md:col-span-3">
-      {
-        rows.map((r) => (
-          <li class="flex flex-col gap-1 border-b border-line py-6 md:flex-row md:items-baseline md:gap-6">
-            <span data-level-code={r.id} class="text-title font-semibold tracking-tight tabular-nums md:w-48 md:shrink-0">
-              {r.code}
-            </span>
-            <span class="text-slate">
-              <span data-level-name={r.id}>{r.name}</span>, one of {r.count.toLocaleString('en')} {r.noun}
-            </span>
-          </li>
-        ))
-      }
+      {rows.map((r) => (
+        <li class="flex flex-col gap-1 border-line border-b py-6 md:flex-row md:items-baseline md:gap-6">
+          <span
+            data-level-code={r.id}
+            class="font-semibold text-title tabular-nums tracking-tight md:w-48 md:shrink-0"
+          >
+            {r.code}
+          </span>
+          <span class="text-slate">
+            <span data-level-name={r.id}>{r.name}</span>, one of {r.count.toLocaleString('en')}{' '}
+            {r.noun}
+          </span>
+        </li>
+      ))}
     </ol>
   </Container>
 </section>
@@ -60,5 +82,6 @@ const rows = [
     }
   });
 
-  if (section && title && list) revealSection(section, title, document.getElementById('levels-lead'), [...list.children]);
+  if (section && title && list)
+    revealSection(section, title, document.getElementById('levels-lead'), [...list.children]);
 </script>

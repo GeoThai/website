@@ -2,8 +2,8 @@
 import { readFileSync } from 'node:fs';
 
 import tailwindcss from '@tailwindcss/vite';
-import icon from 'astro-icon';
 import { defineConfig, fontProviders } from 'astro/config';
+import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({

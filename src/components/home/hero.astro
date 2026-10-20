@@ -8,9 +8,30 @@ import { startPlace } from '@/lib/data';
 const { province: prov, district: dist, subdistrict: sub } = await startPlace();
 
 const cards = [
-  { level: 'Province', th: prov.name_th, en: prov.name_en, code: prov.code, f: ['5', '6', 'pc'], fan: '-rotate-9 translate-y-7' },
-  { level: 'District', th: dist.name_th, en: dist.name_en, code: dist.code, f: ['3', '4', 'dc'], fan: '-rotate-3 translate-y-1.5' },
-  { level: 'Subdistrict', th: sub.name_th, en: sub.name_en, code: sub.code, f: ['1', '2', '0'], fan: 'rotate-3 translate-y-1.5' },
+  {
+    level: 'Province',
+    th: prov.name_th,
+    en: prov.name_en,
+    code: prov.code,
+    f: ['5', '6', 'pc'],
+    fan: '-rotate-9 translate-y-7',
+  },
+  {
+    level: 'District',
+    th: dist.name_th,
+    en: dist.name_en,
+    code: dist.code,
+    f: ['3', '4', 'dc'],
+    fan: '-rotate-3 translate-y-1.5',
+  },
+  {
+    level: 'Subdistrict',
+    th: sub.name_th,
+    en: sub.name_en,
+    code: sub.code,
+    f: ['1', '2', '0'],
+    fan: 'rotate-3 translate-y-1.5',
+  },
 ];
 ---
 
@@ -20,10 +41,11 @@ const cards = [
       Find any place in Thailand, down to the subdistrict.
     </h1>
     <p id="hero-lead" class="mt-5 max-w-xl text-xl leading-normal text-pretty text-slate">
-      Province, district, subdistrict and postal code, from one search. Every value is checked against official sources.
+      Province, district, subdistrict and postal code, from one search. Every value is checked
+      against official sources.
     </p>
 
-    <div id="hero-search" role="search" class="relative z-10 mt-7 w-full max-w-140 text-left">
+    <search id="hero-search" class="relative z-10 mt-7 w-full max-w-140 text-left">
       <label class="sr-only" for="q">Search a place</label>
       <Input
         icon="solar:magnifer-linear"
@@ -37,30 +59,37 @@ const cards = [
         aria-expanded="false"
         aria-controls="q-list"
       />
-      <ul id="q-list" role="listbox" hidden class="absolute inset-x-0 top-16 z-20 max-h-96 overflow-y-auto overscroll-contain rounded-3xl border border-line bg-white p-1.5"></ul>
+      <ul
+        id="q-list"
+        hidden
+        class="absolute inset-x-0 top-16 z-20 max-h-96 overflow-y-auto overscroll-contain rounded-3xl border border-line bg-white p-1.5"
+      ></ul>
       <p id="q-status" aria-live="polite" class="mt-2.5 min-h-6 text-center text-sm text-slate"></p>
-    </div>
+    </search>
 
     <div
       id="hand"
-      aria-live="polite"
+      role="status"
       aria-label="Where the place sits"
       class="relative mt-5 flex h-85 w-full justify-center max-md:h-57.5 max-md:origin-top max-md:scale-84"
     >
-      {
-        cards.map((c) => (
-          <HandCard tone={c.level === 'Province' ? 'mist' : 'white'} class={c.fan}>
-            <p class="mb-4.5 text-sm text-slate max-md:mb-2">{c.level}</p>
-            <p data-f={c.f[0]} class="text-card font-semibold tracking-tight wrap-break-word max-md:text-base">
-              {c.th}
-            </p>
-            <p data-f={c.f[1]} class="line-clamp-2 text-slate max-md:text-sm">{c.en}</p>
-            <p data-f={c.f[2]} class="mt-auto font-medium text-slate tabular-nums max-md:text-sm">
-              {c.code}
-            </p>
-          </HandCard>
-        ))
-      }
+      {cards.map((c) => (
+        <HandCard tone={c.level === 'Province' ? 'mist' : 'white'} class={c.fan}>
+          <p class="mb-4.5 text-slate text-sm max-md:mb-2">{c.level}</p>
+          <p
+            data-f={c.f[0]}
+            class="wrap-break-word font-semibold text-card tracking-tight max-md:text-base"
+          >
+            {c.th}
+          </p>
+          <p data-f={c.f[1]} class="line-clamp-2 text-slate max-md:text-sm">
+            {c.en}
+          </p>
+          <p data-f={c.f[2]} class="mt-auto font-medium text-slate tabular-nums max-md:text-sm">
+            {c.code}
+          </p>
+        </HandCard>
+      ))}
       <HandCard tone="black" class="rotate-9 translate-y-7">
         <p class="mb-4.5 text-sm text-white/65 max-md:mb-2">Postal code</p>
         <p
@@ -70,7 +99,10 @@ const cards = [
         >
           {sub.postal_codes.join(' ')}
         </p>
-        <SymbolWhite class="absolute right-5.5 bottom-5.5 h-auto w-7 max-md:right-3.5 max-md:bottom-3.5 max-md:w-5" aria-hidden="true" />
+        <SymbolWhite
+          class="absolute right-5.5 bottom-5.5 h-auto w-7 max-md:right-3.5 max-md:bottom-3.5 max-md:w-5"
+          aria-hidden="true"
+        />
       </HandCard>
     </div>
   </Container>
@@ -91,8 +123,15 @@ const cards = [
 
   function fill(r: Row) {
     const values: Record<string, string> = {
-      0: r[0], 1: r[1], 2: r[2], 3: r[3], 4: r[4], 5: r[5], 6: r[6],
-      pc: r[0].slice(0, 2), dc: r[0].slice(0, 4),
+      0: r[0],
+      1: r[1],
+      2: r[2],
+      3: r[3],
+      4: r[4],
+      5: r[5],
+      6: r[6],
+      pc: r[0].slice(0, 2),
+      dc: r[0].slice(0, 4),
     };
     for (const el of hand?.querySelectorAll<HTMLElement>('[data-f]') ?? []) {
       const f = el.dataset.f ?? '';
@@ -107,12 +146,27 @@ const cards = [
     if (reduce) return fill(r);
     gsap
       .timeline()
-      .to(cards, { y: 60, opacity: 0, rotation: 0, duration: 0.28, ease: 'power2.in', stagger: 0.04 })
+      .to(cards, {
+        y: 60,
+        opacity: 0,
+        rotation: 0,
+        duration: 0.28,
+        ease: 'power2.in',
+        stagger: 0.04,
+      })
       .add(() => fill(r))
       .fromTo(
         cards,
         { x: -80, y: 40, rotation: -14, opacity: 0 },
-        { x: 0, y: (i) => LIFT[i] ?? 0, rotation: (i) => ROT[i] ?? 0, opacity: 1, duration: 0.7, ease: 'back.out(1.4)', stagger: 0.07 },
+        {
+          x: 0,
+          y: (i) => LIFT[i] ?? 0,
+          rotation: (i) => ROT[i] ?? 0,
+          opacity: 1,
+          duration: 0.7,
+          ease: 'back.out(1.4)',
+          stagger: 0.07,
+        },
       );
   }
 
@@ -204,7 +258,8 @@ const cards = [
   list?.addEventListener(
     'scroll',
     () => {
-      if (list.scrollTop + list.clientHeight > list.scrollHeight - 200) grow(list.children.length + PAGE);
+      if (list.scrollTop + list.clientHeight > list.scrollHeight - 200)
+        grow(list.children.length + PAGE);
     },
     { passive: true },
   );
@@ -253,6 +308,10 @@ const cards = [
       .from(words, { yPercent: 70, opacity: 0, duration: 0.9, stagger: 0.06 })
       .from('#hero-lead', { y: 16, opacity: 0, duration: 0.7 }, '-=0.5')
       .from('#hero-search', { y: 16, opacity: 0, duration: 0.6 }, '-=0.45')
-      .from(cards, { y: 160, rotation: 0, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.09 }, '-=0.35');
+      .from(
+        cards,
+        { y: 160, rotation: 0, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.09 },
+        '-=0.35',
+      );
   }
 </script>
