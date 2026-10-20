@@ -38,12 +38,11 @@ const rows = [
 </section>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { SplitText } from 'gsap/SplitText';
-
+  import { revealSection } from '@/lib/motion';
   import type { Row } from '@/utils/search';
 
+  const section = document.getElementById('data');
+  const title = document.getElementById('levels-title');
   const list = document.getElementById('levels');
 
   document.addEventListener('place-pick', (e) => {
@@ -61,15 +60,5 @@ const rows = [
     }
   });
 
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && list) {
-    gsap.registerPlugin(ScrollTrigger, SplitText);
-    const title = document.getElementById('levels-title');
-    const trigger = { trigger: '#data', start: 'top 80%', once: true };
-    if (title) {
-      const words = SplitText.create(title, { type: 'words', aria: 'auto' }).words;
-      gsap.from(words, { yPercent: 60, opacity: 0, duration: 0.7, ease: 'power3.out', stagger: 0.045, scrollTrigger: trigger });
-    }
-    gsap.from('#levels-lead', { y: 14, opacity: 0, duration: 0.6, delay: 0.25, ease: 'power2.out', scrollTrigger: trigger });
-    gsap.from(list.children, { x: -24, opacity: 0, duration: 0.6, ease: 'power2.out', stagger: 0.12, scrollTrigger: { ...trigger, trigger: list } });
-  }
+  if (section && title && list) revealSection(section, title, document.getElementById('levels-lead'), [...list.children]);
 </script>
