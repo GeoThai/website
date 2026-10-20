@@ -7,6 +7,7 @@ import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { type District, loadData, type Province, postalCodes } from '@/lib/data';
 import { count } from '@/utils/format';
+import { administrativeArea, breadcrumbs, graph } from '@/utils/schema';
 import { areaSlug } from '@/utils/slug';
 
 export async function getStaticPaths() {
@@ -27,24 +28,26 @@ const rows = subdistricts.filter((s) => s.district_code === district.code);
 const postal = postalCodes(rows);
 const provinceHref = `/${areaSlug(province)}/`;
 const districtHref = `${provinceHref}${areaSlug(district)}/`;
+const page = new URL(Astro.url.pathname, Astro.site);
+const trail = [
+  { label: 'Home', href: '/' },
+  { label: 'Provinces', href: '/provinces/' },
+  { label: province.name_en, href: provinceHref },
+  { label: district.name_en },
+];
 ---
 
 <Base
+  jsonLd={graph(
+    administrativeArea(district, page, { parent: new URL(provinceHref, page) }),
+    breadcrumbs(trail, page),
+  )}
   title={`${district.name_en} (${district.name_th}), ${province.name_en}: subdistricts and postal codes · GeoThai`}
   description={`${district.name_en} district in ${province.name_en}, code ${district.code}: ${count(rows.length, 'subdistrict')} and postal codes ${postal.join(', ')}.`}
 >
   <section id="place" class="py-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
-      <Heading
-        trail={[
-          { label: 'Home', href: '/' },
-          { label: 'Provinces', href: '/provinces/' },
-          { label: province.name_en, href: provinceHref },
-          { label: district.name_en },
-        ]}
-        kicker={district.code}
-        title={district.name_th}
-      >
+      <Heading trail={trail} kicker={district.code} title={district.name_th}>
         {`${district.name_en} district, `}
         <a href={provinceHref} class="underline underline-offset-4 hover:text-black">
           {province.name_en}

@@ -7,6 +7,7 @@ import Base from '@/layouts/base.astro';
 import {
   CDN_URL,
   DATA_VERSION,
+  datasetLd,
   downloadUrl,
   loadData,
   REPO_URL,
@@ -14,6 +15,7 @@ import {
   startPlace,
 } from '@/lib/data';
 import { count, num } from '@/utils/format';
+import { graph } from '@/utils/schema';
 
 const { districts, subdistricts, datapackage, byPostal } = await loadData();
 const { subdistrict } = await startPlace();
@@ -91,9 +93,11 @@ const nav = [
   { id: 'usage', label: 'Usage' },
   { id: 'versions', label: 'Versions' },
 ];
+const jsonLd = graph(await datasetLd());
 ---
 
 <Base
+  jsonLd={jsonLd}
   title="Docs · GeoThai"
   description="Files, formats, usage and versions of the GeoThai data for Thailand's provinces, districts, subdistricts and postal codes."
 >

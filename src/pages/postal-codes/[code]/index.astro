@@ -7,6 +7,7 @@ import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { loadData, parentsOf, type Subdistrict } from '@/lib/data';
 import { count, plural } from '@/utils/format';
+import { breadcrumbs, graph } from '@/utils/schema';
 import { areaSlug } from '@/utils/slug';
 
 export async function getStaticPaths() {
@@ -28,23 +29,22 @@ const rows = places.map((s) => {
 const inProvinces = [...new Map(rows.map((r) => [r.province.code, r.province])).values()];
 const inDistricts = new Set(rows.map((r) => r.district.code)).size;
 const where = inProvinces.map((p) => p.name_en).join(', ');
+const page = new URL(Astro.url.pathname, Astro.site);
+const trail = [
+  { label: 'Home', href: '/' },
+  { label: 'Postal codes', href: '/postal-codes/' },
+  { label: code },
+];
 ---
 
 <Base
+  jsonLd={graph(breadcrumbs(trail, page))}
   title={`Postal code ${code}: ${count(rows.length, 'subdistrict')} in ${where} · GeoThai`}
   description={`Postal code ${code} covers ${count(rows.length, 'subdistrict')} in ${where}: ${rows.map((r) => r.name_en).join(', ')}.`}
 >
   <section id="place" class="py-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
-      <Heading
-        trail={[
-          { label: 'Home', href: '/' },
-          { label: 'Postal codes', href: '/postal-codes/' },
-          { label: code },
-        ]}
-        kicker="Postal code"
-        title={code}
-      >
+      <Heading trail={trail} kicker="Postal code" title={code}>
         {`${count(rows.length, 'subdistrict')} in ${where}`}
       </Heading>
 

@@ -5,9 +5,13 @@ import Levels from '@/components/home/levels.astro';
 import Sources from '@/components/home/sources.astro';
 import Usage from '@/components/home/usage.astro';
 import Base from '@/layouts/base.astro';
+import { datasetLd } from '@/lib/data';
+import { graph } from '@/utils/schema';
+
+const jsonLd = graph(await datasetLd());
 ---
 
-<Base>
+<Base jsonLd={jsonLd}>
   <Hero />
   <Levels />
   <Sources />

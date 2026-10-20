@@ -5,6 +5,7 @@ import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { loadData } from '@/lib/data';
 import { count } from '@/utils/format';
+import { breadcrumbs, graph } from '@/utils/schema';
 
 const { byPostal, provinceBy, districtBy } = await loadData();
 const rows = [...byPostal].map(([code, places]) => {
@@ -23,15 +24,18 @@ const rows = [...byPostal].map(([code, places]) => {
     ),
   };
 });
+const page = new URL(Astro.url.pathname, Astro.site);
+const trail = [{ label: 'Home', href: '/' }, { label: 'Postal codes' }];
 ---
 
 <Base
+  jsonLd={graph(breadcrumbs(trail, page))}
   title={`All ${rows.length} postal codes of Thailand · GeoThai`}
   description="Every postal code of Thailand with the subdistricts, districts and provinces it covers."
 >
   <section id="postal" aria-labelledby="postal-title" class="py-18 md:py-24">
     <Container>
-      <Breadcrumb trail={[{ label: 'Home', href: '/' }, { label: 'Postal codes' }]} />
+      <Breadcrumb trail={trail} />
       <h1 id="postal-title" class="mt-10 text-title font-semibold tracking-tight text-balance">
         Postal codes
       </h1>

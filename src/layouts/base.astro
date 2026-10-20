@@ -5,11 +5,20 @@ import Footer from '@/components/layout/footer.astro';
 import Header from '@/components/layout/header.astro';
 import '@/styles/global.css';
 
-type Props = { title?: string; description?: string };
+type Props = {
+  title?: string;
+  description?: string;
+  /** schema.org JSON-LD for this page. */
+  jsonLd?: object;
+  /** Keeps the page out of search results, for the 404 page. */
+  noindex?: boolean;
+};
 
 const {
   title = 'GeoThai: every place in Thailand, checked',
   description = 'Every province, district, subdistrict and postal code of Thailand, checked against official sources.',
+  jsonLd,
+  noindex = false,
 } = Astro.props;
 const url = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -20,7 +29,7 @@ const url = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{title}</title>
     <meta name="description" content={description}>
-    <link rel="canonical" href={url}>
+    {noindex ? <meta name="robots" content="noindex"> : <link rel="canonical" href={url}>}
     <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -36,6 +45,13 @@ const url = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:image:alt" content="GeoThai: every place in Thailand, checked.">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="generator" content={Astro.generator}>
+    {jsonLd && (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify(jsonLd).replaceAll('<', '\\u003c')}
+      />
+    )}
     <Font cssVariable="--font-bai-jamjuree" preload />
     <Font cssVariable="--font-jetbrains-mono" />
   </head>

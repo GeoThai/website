@@ -5,6 +5,7 @@ import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { loadData } from '@/lib/data';
 import { count } from '@/utils/format';
+import { breadcrumbs, graph } from '@/utils/schema';
 import { areaSlug } from '@/utils/slug';
 
 const { provinces, districts, subdistricts } = await loadData();
@@ -14,15 +15,18 @@ const rows = provinces.map((p) => ({
   districts: districts.filter((d) => d.province_code === p.code).length,
   subdistricts: subdistricts.filter((s) => s.province_code === p.code).length,
 }));
+const page = new URL(Astro.url.pathname, Astro.site);
+const trail = [{ label: 'Home', href: '/' }, { label: 'Provinces' }];
 ---
 
 <Base
+  jsonLd={graph(breadcrumbs(trail, page))}
   title="All 77 provinces of Thailand · GeoThai"
   description="Every province of Thailand with its code, Thai and English names, districts and subdistricts."
 >
   <section id="provinces" aria-labelledby="provinces-title" class="py-18 md:py-24">
     <Container>
-      <Breadcrumb trail={[{ label: 'Home', href: '/' }, { label: 'Provinces' }]} />
+      <Breadcrumb trail={trail} />
       <h1 id="provinces-title" class="mt-10 text-title font-semibold tracking-tight text-balance">
         Provinces
       </h1>

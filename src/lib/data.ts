@@ -1,3 +1,5 @@
+import { dataset } from '@/utils/schema';
+
 export type Province = { code: string; name_th: string; name_en: string };
 export type District = Province & { province_code: string };
 export type Subdistrict = Province & {
@@ -9,6 +11,7 @@ export type Subdistrict = Province & {
 /** Set from data.version in astro.config.mjs. */
 export const DATA_VERSION = import.meta.env.DATA_VERSION;
 
+export const SITE_URL = import.meta.env.SITE;
 export const ORG_URL = 'https://github.com/GeoThai';
 export const REPO_URL = `${ORG_URL}/data`;
 /** jsDelivr serves every file of the pinned release. */
@@ -33,6 +36,12 @@ export type Field = {
   constraints?: { required?: boolean; pattern?: string; enum?: string[] };
 };
 export type DataPackage = {
+  title: string;
+  description: string;
+  version: string;
+  created: string;
+  licenses: { name: string; path: string }[];
+  sources: { title: string; path: string }[];
   counts: Record<string, number>;
   resources: { name: string; path: string; format: string; schema?: { fields: Field[] } }[];
 };
@@ -95,3 +104,23 @@ export async function startPlace() {
 }
 
 export const loadChangelog = async () => (await raw('CHANGELOG.md')).text();
+
+/** schema.org Dataset for the pinned release, built from its datapackage.json. */
+export async function datasetLd() {
+  const { datapackage } = await loadData();
+  return dataset({
+    name: datapackage.title,
+    description: datapackage.description,
+    url: new URL('/', SITE_URL).href,
+    version: datapackage.version,
+    created: datapackage.created,
+    license: datapackage.licenses[0]?.path ?? '',
+    repo: REPO_URL,
+    org: ORG_URL,
+    downloads: [
+      { format: 'application/zip', url: downloadUrl('json') },
+      { format: 'application/zip', url: downloadUrl('csv') },
+    ],
+    sources: datapackage.sources.map((s) => s.path),
+  });
+}
