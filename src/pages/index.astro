@@ -1,17 +1,9 @@
 ---
-import "../styles/global.css";
+import Base from '@/layouts/base.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1 class="text-4xl font-semibold">Astro</h1>
-	</body>
-</html>
+<Base>
+  <h1 class="mx-auto mt-24 w-[min(100%-2*clamp(20px,4vw,56px),1200px)] text-5xl font-semibold tracking-tight">
+    Every place in Thailand, checked.
+  </h1>
+</Base>

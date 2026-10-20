@@ -1,1 +1,26 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-mist: #f4f4f5;
+  --color-line: #e4e4e7;
+  --color-slate: #5e636b;
+  --color-black: #000000;
+
+  --font-sans: var(--font-bai-jamjuree);
+
+  --radius-panel: 28px;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-white font-sans text-black antialiased;
+  }
+  :focus-visible {
+    @apply rounded-md outline-2 outline-offset-3 outline-black;
+  }
+}
