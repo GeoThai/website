@@ -5,8 +5,7 @@ import Container from '@/components/ui/container.astro';
 ---
 
 <header
-  id="site-header"
-  class="sticky top-0 z-20 animate-fade-down border-b border-line bg-white/90 backdrop-blur-md transition duration-300 ease-out data-away:-translate-y-full data-away:opacity-0 motion-reduce:animate-none motion-reduce:transition-none"
+  class="sticky top-0 z-20 animate-fade-down border-b border-line bg-white/90 backdrop-blur-md motion-reduce:animate-none"
 >
   <Container
     as="nav"
@@ -20,41 +19,3 @@ import Container from '@/components/ui/container.astro';
     <Button href="https://github.com/GeoThai/data" size="sm">Get the data</Button>
   </Container>
 </header>
-
-<script>
-  const HIDE_AFTER = 160;
-  const SHOW_AFTER_UP = 48;
-
-  const header = document.getElementById('site-header');
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (header && !reduce) {
-    let last = scrollY;
-    let up = 0;
-    let ticking = false;
-
-    const update = () => {
-      ticking = false;
-      const y = scrollY;
-      const delta = y - last;
-      last = y;
-      up = delta < 0 ? up - delta : 0;
-      if (y < HIDE_AFTER || up > SHOW_AFTER_UP || header.contains(document.activeElement)) {
-        header.removeAttribute('data-away');
-      } else if (delta > 0) {
-        header.setAttribute('data-away', '');
-      }
-    };
-
-    addEventListener(
-      'scroll',
-      () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(update);
-      },
-      { passive: true },
-    );
-    header.addEventListener('focusin', () => header.removeAttribute('data-away'));
-  }
-</script>
