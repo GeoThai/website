@@ -17,6 +17,7 @@ const rows = [
   },
   {
     id: 'district',
+    href: `/${areaSlug(prov)}/${areaSlug(dist)}/`,
     code: dist.code,
     name: dist.name_en,
     count: districts.length,
@@ -93,9 +94,10 @@ const rows = [
       if (codeEl) codeEl.textContent = code;
       if (nameEl) nameEl.textContent = name;
     }
-    list
-      ?.querySelector('a[data-level-name="province"]')
-      ?.setAttribute('href', `/${areaSlug({ code: r[0].slice(0, 2), name_en: r[6] })}/`);
+    const province = `/${areaSlug({ code: r[0].slice(0, 2), name_en: r[6] })}/`;
+    const district = `${province}${areaSlug({ code: r[0].slice(0, 4), name_en: r[4] })}/`;
+    list?.querySelector('a[data-level-name="province"]')?.setAttribute('href', province);
+    list?.querySelector('a[data-level-name="district"]')?.setAttribute('href', district);
   });
 
   if (section && title && list)

@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 
+import Totals from '@/components/place/totals.astro';
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
@@ -61,18 +62,7 @@ const download = (version: string, kind: 'json' | 'csv') =>
             {r.notes.map((n) => (
               <p class="mt-4 text-pretty">{n}</p>
             ))}
-            {r.version === DATA_VERSION && (
-              <dl class="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-line sm:grid-cols-4">
-                {totals.map((t) => (
-                  <div class="bg-mist px-5 py-4">
-                    <dt class="text-slate text-sm">{t.label}</dt>
-                    <dd class="font-semibold text-2xl tabular-nums tracking-tight">
-                      {t.n.toLocaleString('en')}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            )}
+            {r.version === DATA_VERSION && <Totals items={totals} class="mt-6" />}
             {r.sections.map((s) => (
               <details open={s.changes.length <= OPEN_UP_TO} class="group mt-6 rounded-3xl bg-mist">
                 <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium">
