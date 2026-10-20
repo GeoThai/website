@@ -7,7 +7,6 @@ const norm = (s: string) =>
     .normalize('NFC')
     .replaceAll(/[\s\-']/g, '');
 
-/** Exact matches first, then prefixes, then substrings and district or province prefixes. */
 export function searchRows(rows: Row[], query: string, limit = 8): Row[] {
   const q = norm(query);
   if (!q) return [];

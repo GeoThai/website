@@ -6,7 +6,7 @@ export type Subdistrict = Province & {
   postal_codes: string[];
 };
 
-/** The GeoThai/data release this build reads, from data.version. */
+/** Set from data.version in astro.config.mjs. */
 export const DATA_VERSION = import.meta.env.DATA_VERSION;
 
 async function get<T>(path: string): Promise<T> {
@@ -27,5 +27,4 @@ async function load() {
 
 let cache: ReturnType<typeof load> | undefined;
 
-/** Downloads the pinned release once per build. */
 export const loadData = () => (cache ??= load());
