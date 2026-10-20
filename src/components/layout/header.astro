@@ -1,6 +1,4 @@
 ---
-import { Icon } from 'astro-icon/components';
-
 import Logo from '@/assets/logo.svg';
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
@@ -61,16 +59,46 @@ const data = 'https://github.com/GeoThai/data';
         class="group inline-flex size-12 items-center justify-center rounded-full transition hover:bg-mist active:scale-97 md:hidden"
       >
         <span class="sr-only">Menu</span>
-        <Icon
-          name="solar:hamburger-menu-linear"
-          class="size-6 group-aria-expanded:hidden"
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          class="size-6"
           aria-hidden="true"
-        />
-        <Icon
-          name="solar:close-linear"
-          class="hidden size-6 group-aria-expanded:block"
-          aria-hidden="true"
-        />
+        >
+          <!-- Solar hamburger-menu-linear morphing into close-linear: 2 drops onto 3, 1 swings down, 3 swings up. -->
+          <line
+            x1="4"
+            y1="7"
+            x2="20"
+            y2="7"
+            transform-origin="4 7"
+            vector-effect="non-scaling-stroke"
+            class="transition-all delay-150 duration-150 ease-pill group-aria-expanded:translate-x-px group-aria-expanded:-translate-y-0.5 group-aria-expanded:rotate-45 group-aria-expanded:scale-x-124 motion-reduce:transition-none"
+          />
+          <g
+            class="transition-opacity delay-150 duration-0 group-aria-expanded:opacity-0 group-aria-expanded:delay-300"
+          >
+            <line
+              x1="4"
+              y1="12"
+              x2="20"
+              y2="12"
+              class="transition-all delay-300 duration-150 ease-pill group-aria-expanded:translate-y-1.25 group-aria-expanded:delay-0 motion-reduce:transition-none"
+            />
+          </g>
+          <line
+            x1="4"
+            y1="17"
+            x2="20"
+            y2="17"
+            transform-origin="4 17"
+            vector-effect="non-scaling-stroke"
+            class="transition-all duration-150 ease-pill group-aria-expanded:translate-x-px group-aria-expanded:translate-y-0.5 group-aria-expanded:-rotate-45 group-aria-expanded:scale-x-124 group-aria-expanded:delay-300 motion-reduce:transition-none"
+          />
+        </svg>
       </button>
     </nav>
 
