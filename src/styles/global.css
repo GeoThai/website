@@ -12,6 +12,8 @@
 
   --text-display: clamp(2.4rem, 1.3rem + 3.4vw, 4rem);
   --text-display--line-height: 1.08;
+  --text-title: clamp(2rem, 1.4rem + 2.4vw, 3rem);
+  --text-title--line-height: 1.08;
   --text-card: 1.3rem;
   --text-card--line-height: 1.2;
   --text-postal: 3.4rem;

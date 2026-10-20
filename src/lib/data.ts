@@ -28,3 +28,18 @@ async function load() {
 let cache: ReturnType<typeof load> | undefined;
 
 export const loadData = () => (cache ??= load());
+
+/** The place the home page shows before a search: Bangkok's first subdistrict. */
+export async function startPlace() {
+  const code = '100101';
+  const { provinces, districts, subdistricts } = await loadData();
+  const subdistrict = subdistricts.find((s) => s.code === code);
+  const district = districts.find((d) => d.code === subdistrict?.district_code);
+  const province = provinces.find((p) => p.code === subdistrict?.province_code);
+  if (!subdistrict || !district || !province) {
+    throw new Error(
+      `start place ${code} or its parents are missing from GeoThai/data ${DATA_VERSION}`,
+    );
+  }
+  return { province, district, subdistrict };
+}
