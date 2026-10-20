@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "geothai-website",
+  "compatibility_date": "2026-10-21",
+  // Static assets only: no Worker script runs.
+  "assets": {
+    "directory": "./dist",
+    // Unknown URLs get dist/404.html with status 404.
+    "not_found_handling": "404-page",
+    // /provinces redirects to /provinces/, matching trailingSlash: 'always'.
+    "html_handling": "auto-trailing-slash"
+  },
+  "routes": [{ "pattern": "geothai.fasu.dev", "custom_domain": true }]
+}
