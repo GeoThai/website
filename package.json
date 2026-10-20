@@ -1,19 +1,32 @@
 {
-  "name": "website",
+  "name": "@geothai/website",
+  "private": true,
   "type": "module",
-  "version": "0.0.1",
-  "engines": {
-    "node": ">=22.22.0"
-  },
   "scripts": {
-    "dev": "astro dev",
+    "astro": "astro",
     "build": "astro build",
+    "dev": "astro dev",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "preview": "astro preview",
-    "astro": "astro"
+    "typecheck": "astro check"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.4.1",
     "tailwindcss": "^4.3.3"
-  }
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.11",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2004",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "packageManager": "bun@1.4.2"
 }
