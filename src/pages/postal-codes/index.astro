@@ -1,0 +1,85 @@
+---
+import Breadcrumb from '@/components/place/breadcrumb.astro';
+import ListFilter from '@/components/place/list-filter.astro';
+import Container from '@/components/ui/container.astro';
+import Base from '@/layouts/base.astro';
+import { loadData } from '@/lib/data';
+
+const { provinces, districts, subdistricts } = await loadData();
+const provinceBy = new Map(provinces.map((p) => [p.code, p]));
+const districtBy = new Map(districts.map((d) => [d.code, d]));
+
+const byCode = new Map<string, typeof subdistricts>();
+for (const s of subdistricts) {
+  for (const code of s.postal_codes) byCode.set(code, [...(byCode.get(code) ?? []), s]);
+}
+const rows = [...byCode]
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([code, places]) => {
+    const inProvinces = [...new Set(places.map((s) => s.province_code))].flatMap(
+      (c) => provinceBy.get(c) ?? [],
+    );
+    const inDistricts = [...new Set(places.map((s) => s.district_code))].flatMap(
+      (c) => districtBy.get(c) ?? [],
+    );
+    return {
+      code,
+      count: places.length,
+      where: inProvinces.map((p) => p.name_en).join(', '),
+      keys: [
+        code,
+        ...[...inProvinces, ...inDistricts].map((a) => `${a.name_th} ${a.name_en}`),
+      ].join(' '),
+    };
+  });
+---
+
+<Base
+  title={`All ${rows.length} postal codes of Thailand · GeoThai`}
+  description="Every postal code of Thailand with the subdistricts, districts and provinces it covers."
+>
+  <section id="postal" aria-labelledby="postal-title" class="py-18 md:py-24">
+    <Container>
+      <Breadcrumb trail={[{ label: 'Home', href: '/' }, { label: 'Postal codes' }]} />
+      <h1 id="postal-title" class="mt-10 text-title font-semibold tracking-tight text-balance">
+        Postal codes
+      </h1>
+      <p id="postal-lead" class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
+        All {rows.length} postal codes, sorted by code. Each one lists the subdistricts it covers.
+      </p>
+      <ListFilter
+        list="postal-list"
+        noun="postal codes"
+        placeholder="Filter by code or place"
+        class="mt-10"
+      />
+      <ul id="postal-list" class="mt-6 border-t border-line">
+        {rows.map((r) => (
+          <li class="border-line border-b" data-keys={r.keys}>
+            <a
+              href={`/postal-codes/${r.code}/`}
+              class="grid gap-1 rounded-2xl px-3 py-4 transition-colors hover:bg-mist md:grid-cols-12 md:items-baseline md:gap-6"
+            >
+              <span class="font-semibold tabular-nums md:col-span-2">{r.code}</span>
+              <span class="text-slate md:col-span-6">{r.where}</span>
+              <span class="text-slate text-sm tabular-nums md:col-span-4 md:text-right">
+                {`${r.count} ${r.count === 1 ? 'subdistrict' : 'subdistricts'}`}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </Container>
+  </section>
+</Base>
+
+<script>
+  import { revealSection } from '@/lib/motion';
+
+  const section = document.getElementById('postal');
+  const title = document.getElementById('postal-title');
+  const list = document.getElementById('postal-list');
+  if (section && title && list) {
+    revealSection(section, title, document.getElementById('postal-lead'), [...list.children]);
+  }
+</script>

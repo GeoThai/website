@@ -1,0 +1,128 @@
+---
+import Breadcrumb from '@/components/place/breadcrumb.astro';
+import ListFilter from '@/components/place/list-filter.astro';
+import Totals from '@/components/place/totals.astro';
+import Container from '@/components/ui/container.astro';
+import Base from '@/layouts/base.astro';
+import { DATA_VERSION, loadData, type Subdistrict } from '@/lib/data';
+import { areaSlug } from '@/utils/slug';
+
+export async function getStaticPaths() {
+  const { subdistricts } = await loadData();
+  const byCode = new Map<string, Subdistrict[]>();
+  for (const s of subdistricts) {
+    for (const code of s.postal_codes) byCode.set(code, [...(byCode.get(code) ?? []), s]);
+  }
+  return [...byCode].map(([code, places]) => ({ params: { code }, props: { code, places } }));
+}
+
+const { code, places } = Astro.props as { code: string; places: Subdistrict[] };
+const { provinces, districts } = await loadData();
+const provinceBy = new Map(provinces.map((p) => [p.code, p]));
+const districtBy = new Map(districts.map((d) => [d.code, d]));
+const rows = places.map((s) => {
+  const province = provinceBy.get(s.province_code);
+  const district = districtBy.get(s.district_code);
+  if (!province || !district) throw new Error(`subdistrict ${s.code}: parent missing`);
+  return {
+    ...s,
+    district,
+    province,
+    href: `/${areaSlug(province)}/${areaSlug(district)}/${areaSlug(s)}/`,
+  };
+});
+const inProvinces = [...new Map(rows.map((r) => [r.province.code, r.province])).values()];
+const inDistricts = new Set(rows.map((r) => r.district.code)).size;
+const where = inProvinces.map((p) => p.name_en).join(', ');
+const noun = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+---
+
+<Base
+  title={`Postal code ${code}: ${noun(rows.length, 'subdistrict', 'subdistricts')} in ${where} · GeoThai`}
+  description={`Postal code ${code} covers ${noun(rows.length, 'subdistrict', 'subdistricts')} in ${where}: ${rows.map((r) => r.name_en).join(', ')}.`}
+>
+  <section id="place" class="py-18 md:py-24">
+    <Container class="grid gap-14">
+      <div>
+        <Breadcrumb
+          trail={[
+            { label: 'Home', href: '/' },
+            { label: 'Postal codes', href: '/postal-codes/' },
+            { label: code },
+          ]}
+        />
+        <p class="mt-10 text-slate">Postal code</p>
+        <h1 id="place-title" class="mt-2 text-display font-semibold tracking-tight tabular-nums">
+          {code}
+        </h1>
+        <p id="place-lead" class="mt-3 text-xl text-slate">
+          {`${noun(rows.length, 'subdistrict', 'subdistricts')} in ${where}`}
+        </p>
+      </div>
+
+      <Totals
+        items={[
+          { n: rows.length, label: rows.length === 1 ? 'subdistrict' : 'subdistricts' },
+          { n: inDistricts, label: inDistricts === 1 ? 'district' : 'districts' },
+          { n: inProvinces.length, label: inProvinces.length === 1 ? 'province' : 'provinces' },
+        ]}
+      />
+
+      <div>
+        <h2 class="text-2xl font-semibold tracking-tight">Subdistricts</h2>
+        {rows.length > 8 && (
+          <ListFilter
+            list="place-subdistricts"
+            noun="subdistricts"
+            placeholder="Filter by name or code"
+            class="mt-5"
+          />
+        )}
+        <ul id="place-subdistricts" class="mt-6 border-t border-line">
+          {rows.map((r) => (
+            <li
+              class="border-line border-b"
+              data-keys={`${r.code} ${r.name_th} ${r.name_en} ${r.district.name_th} ${r.district.name_en}`}
+            >
+              <a
+                href={r.href}
+                class="grid gap-1 rounded-2xl px-3 py-4 transition-colors hover:bg-mist md:grid-cols-12 md:items-baseline md:gap-6"
+              >
+                <span class="font-mono text-slate text-sm tabular-nums md:col-span-2">
+                  {r.code}
+                </span>
+                <span class="font-semibold md:col-span-3">{r.name_th}</span>
+                <span class="text-slate md:col-span-3">{r.name_en}</span>
+                <span class="text-slate text-sm md:col-span-4">
+                  {`${r.district.name_en}, ${r.province.name_en}`}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <p class="text-sm text-slate">
+        From{' '}
+        <a
+          href={`https://github.com/GeoThai/data/releases/tag/${DATA_VERSION}`}
+          class="font-mono underline underline-offset-4 hover:text-black"
+        >
+          GeoThai/data {DATA_VERSION}
+        </a>
+        .
+      </p>
+    </Container>
+  </section>
+</Base>
+
+<script>
+  import { revealSection } from '@/lib/motion';
+
+  const section = document.getElementById('place');
+  const title = document.getElementById('place-title');
+  const list = document.getElementById('place-subdistricts');
+  if (section && title && list) {
+    revealSection(section, title, document.getElementById('place-lead'), [...list.children]);
+  }
+</script>
