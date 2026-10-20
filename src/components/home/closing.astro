@@ -1,0 +1,24 @@
+---
+import Button from '@/components/ui/button.astro';
+import Container from '@/components/ui/container.astro';
+---
+
+<section id="closing" aria-labelledby="closing-title" class="py-18 md:py-36">
+  <Container>
+    <div id="closing-panel" class="grid justify-items-start gap-7 rounded-panel bg-mist p-12 md:p-24">
+      <h2 id="closing-title" class="max-w-md text-title font-semibold tracking-tight text-balance">
+        Build on places you can trust.
+      </h2>
+      <Button href="https://github.com/GeoThai/data">Get the data on GitHub</Button>
+    </div>
+  </Container>
+</section>
+
+<script>
+  import { revealSection } from '@/lib/motion';
+
+  const section = document.getElementById('closing');
+  const title = document.getElementById('closing-title');
+  const panel = document.getElementById('closing-panel');
+  if (section && title && panel) revealSection(section, title, null, [panel]);
+</script>
