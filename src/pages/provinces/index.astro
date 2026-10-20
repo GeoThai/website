@@ -1,7 +1,7 @@
 ---
 import Breadcrumb from '@/components/place/breadcrumb.astro';
+import ListFilter from '@/components/place/list-filter.astro';
 import Container from '@/components/ui/container.astro';
-import Input from '@/components/ui/input.astro';
 import Base from '@/layouts/base.astro';
 import { loadData } from '@/lib/data';
 import { areaSlug } from '@/utils/slug';
@@ -30,19 +30,12 @@ const n = (x: number) => x.toLocaleString('en');
         All {rows.length} provinces, sorted by code. Each one lists its districts, subdistricts and
         postal codes.
       </p>
-      <search class="mt-10 block max-w-140">
-        <label class="sr-only" for="province-q">Filter provinces</label>
-        <Input
-          icon="solar:magnifer-linear"
-          id="province-q"
-          type="search"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="Filter by name or code"
-          aria-controls="provinces-list"
-        />
-        <p id="province-status" aria-live="polite" class="mt-2.5 min-h-6 text-sm text-slate"></p>
-      </search>
+      <ListFilter
+        list="provinces-list"
+        noun="provinces"
+        placeholder="Filter by name or code"
+        class="mt-10"
+      />
       <ul id="provinces-list" class="mt-6 border-t border-line">
         {rows.map((p) => (
           <li class="border-line border-b" data-keys={`${p.code} ${p.name_th} ${p.name_en}`}>
@@ -66,33 +59,6 @@ const n = (x: number) => x.toLocaleString('en');
 
 <script>
   import { revealSection } from '@/lib/motion';
-  import { norm } from '@/utils/search';
-
-  const input = document.getElementById('province-q') as HTMLInputElement | null;
-  const status = document.getElementById('province-status');
-  const rows = [...document.querySelectorAll<HTMLElement>('#provinces-list > li')].map((li) => ({
-    li,
-    keys: norm(li.dataset.keys ?? ''),
-  }));
-
-  input?.addEventListener('input', () => {
-    const q = norm(input.value);
-    let shown = 0;
-    for (const { li, keys } of rows) {
-      const match = !q || keys.includes(q);
-      li.hidden = !match;
-      if (match) shown++;
-    }
-    if (!status) return;
-    if (!q) status.textContent = '';
-    else if (shown) status.textContent = `${shown} of ${rows.length} provinces match.`;
-    else status.textContent = 'No province matches. Try the Thai or English name, or the code.';
-  });
-  input?.addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
-    const first = rows.find((r) => !r.li.hidden)?.li.querySelector('a');
-    if (input.value && first) first.click();
-  });
 
   const section = document.getElementById('provinces');
   const title = document.getElementById('provinces-title');

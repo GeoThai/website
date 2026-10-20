@@ -1,0 +1,63 @@
+---
+import Input from '@/components/ui/input.astro';
+import { cn } from '@/utils/cn';
+
+type Props = {
+  /** id of the list whose `<li data-keys>` rows are filtered */
+  list: string;
+  /** plural noun for the status line, e.g. "districts" */
+  noun: string;
+  placeholder: string;
+  class?: string;
+};
+
+const { list, noun, placeholder, class: className } = Astro.props;
+---
+
+<search class={cn('block max-w-140', className)} data-filter={list} data-noun={noun}>
+  <label class="sr-only" for={`${list}-q`}>{`Filter ${noun}`}</label>
+  <Input
+    icon="solar:magnifer-linear"
+    id={`${list}-q`}
+    type="search"
+    autocomplete="off"
+    spellcheck="false"
+    placeholder={placeholder}
+    aria-controls={list}
+  />
+  <p data-filter-status aria-live="polite" class="mt-2.5 min-h-6 text-sm text-slate"></p>
+</search>
+
+<script>
+  import { norm } from '@/utils/search';
+
+  for (const box of document.querySelectorAll<HTMLElement>('[data-filter]')) {
+    const input = box.querySelector('input');
+    const status = box.querySelector('[data-filter-status]');
+    const noun = box.dataset.noun ?? 'items';
+    const rows = [
+      ...document.querySelectorAll<HTMLElement>(`#${box.dataset.filter} > li[data-keys]`),
+    ].map((li) => ({ li, keys: norm(li.dataset.keys ?? '') }));
+
+    input?.addEventListener('input', () => {
+      const q = norm(input.value);
+      let shown = 0;
+      for (const { li, keys } of rows) {
+        const match = !q || keys.includes(q);
+        li.hidden = !match;
+        if (match) shown++;
+      }
+      if (!status) return;
+      if (!q) status.textContent = '';
+      else if (shown) status.textContent = `${shown} of ${rows.length} ${noun} match.`;
+      else status.textContent = `No ${noun} match. Try the Thai or English name, or a code.`;
+    });
+    input?.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' || !input.value) return;
+      rows
+        .find((r) => !r.li.hidden)
+        ?.li.querySelector('a')
+        ?.click();
+    });
+  }
+</script>

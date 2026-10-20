@@ -1,5 +1,6 @@
 ---
 import Breadcrumb from '@/components/place/breadcrumb.astro';
+import ListFilter from '@/components/place/list-filter.astro';
 import Totals from '@/components/place/totals.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
@@ -44,7 +45,13 @@ const totals = [
   <section id="place" class="py-18 md:py-24">
     <Container class="grid gap-14">
       <div>
-        <Breadcrumb trail={[{ label: 'Home', href: '/' }, { label: province.name_en }]} />
+        <Breadcrumb
+          trail={[
+            { label: 'Home', href: '/' },
+            { label: 'Provinces', href: '/provinces/' },
+            { label: province.name_en },
+          ]}
+        />
         <p class="mt-10 font-mono text-slate tabular-nums">{province.code}</p>
         <h1 id="place-title" class="mt-2 text-display font-semibold tracking-tight text-balance">
           {province.name_th}
@@ -56,9 +63,18 @@ const totals = [
 
       <div>
         <h2 class="text-2xl font-semibold tracking-tight">Districts</h2>
-        <ul id="place-districts" class="mt-5 border-t border-line">
+        <ListFilter
+          list="place-districts"
+          noun="districts"
+          placeholder="Filter by name, code or postal code"
+          class="mt-5"
+        />
+        <ul id="place-districts" class="mt-6 border-t border-line">
           {rows.map((d) => (
-            <li class="border-line border-b">
+            <li
+              class="border-line border-b"
+              data-keys={`${d.code} ${d.name_th} ${d.name_en} ${d.postal.join(' ')}`}
+            >
               <a
                 href={d.href}
                 class="grid gap-1 rounded-2xl px-3 py-4 transition-colors hover:bg-mist md:grid-cols-12 md:items-baseline md:gap-6"
