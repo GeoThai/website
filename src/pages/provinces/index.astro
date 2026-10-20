@@ -4,6 +4,7 @@ import ListFilter from '@/components/place/list-filter.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { loadData } from '@/lib/data';
+import { count } from '@/utils/format';
 import { areaSlug } from '@/utils/slug';
 
 const { provinces, districts, subdistricts } = await loadData();
@@ -13,7 +14,6 @@ const rows = provinces.map((p) => ({
   districts: districts.filter((d) => d.province_code === p.code).length,
   subdistricts: subdistricts.filter((s) => s.province_code === p.code).length,
 }));
-const n = (x: number) => x.toLocaleString('en');
 ---
 
 <Base
@@ -42,7 +42,7 @@ const n = (x: number) => x.toLocaleString('en');
               <span class="font-semibold md:col-span-4">{p.name_th}</span>
               <span class="text-slate md:col-span-3">{p.name_en}</span>
               <span class="text-slate text-sm tabular-nums md:col-span-4 md:text-right">
-                {n(p.districts)} districts · {n(p.subdistricts)} subdistricts
+                {`${count(p.districts, 'district')} · ${count(p.subdistricts, 'subdistrict')}`}
               </span>
             </a>
           </li>

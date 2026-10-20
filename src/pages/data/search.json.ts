@@ -1,16 +1,12 @@
 import type { APIRoute } from 'astro';
 
-import { loadData } from '@/lib/data';
+import { loadData, parentsOf } from '@/lib/data';
 import type { Row } from '@/utils/search';
 
 export const GET: APIRoute = async () => {
-  const { provinces, districts, subdistricts } = await loadData();
-  const province = new Map(provinces.map((p) => [p.code, p]));
-  const district = new Map(districts.map((d) => [d.code, d]));
-  const rows = subdistricts.map((s): Row => {
-    const d = district.get(s.district_code);
-    const p = province.get(s.province_code);
-    if (!d || !p) throw new Error(`subdistrict ${s.code}: parent missing`);
+  const data = await loadData();
+  const rows = data.subdistricts.map((s): Row => {
+    const { province: p, district: d } = parentsOf(s, data);
     return [
       s.code,
       s.name_th,

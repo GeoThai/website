@@ -1,6 +1,7 @@
 ---
 import Container from '@/components/ui/container.astro';
 import { loadData, startPlace } from '@/lib/data';
+import { num } from '@/utils/format';
 import { areaSlug } from '@/utils/slug';
 
 const { provinces, districts, subdistricts } = await loadData();
@@ -61,7 +62,7 @@ const rows = [
             >
               {r.name}
             </a>
-            , one of {r.count.toLocaleString('en')} {r.noun}
+            , one of {num(r.count)} {r.noun}
           </span>
         </li>
       ))}

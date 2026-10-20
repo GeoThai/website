@@ -115,6 +115,7 @@ const cards = [
 <script>
   import { gsap } from 'gsap';
   import { SplitText } from 'gsap/SplitText';
+  import { count } from '@/utils/format';
 
   import { type Row, searchRows } from '@/utils/search';
 
@@ -252,7 +253,7 @@ const cards = [
       const res = await fetch('/data/search.json');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       rows = (await res.json()) as Row[];
-      status.textContent = `${rows.length.toLocaleString('en')} subdistricts ready to search.`;
+      status.textContent = `${count(rows.length, 'subdistrict')} ready to search.`;
     } catch {
       status.textContent = 'The place list did not load. Reload the page to try again.';
     }
@@ -280,7 +281,7 @@ const cards = [
     render();
     if (!input.value) return;
     status.textContent = results.length
-      ? `${results.length.toLocaleString('en')} ${results.length === 1 ? 'place matches' : 'places match'}.`
+      ? `${count(results.length, 'place matches', 'places match')}.`
       : 'No place matches. Try the Thai or English name, or a postal code.';
   });
   input?.addEventListener('keydown', (e) => {

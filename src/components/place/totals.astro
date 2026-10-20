@@ -1,5 +1,6 @@
 ---
 import { cn } from '@/utils/cn';
+import { num } from '@/utils/format';
 
 type Props = { items: { n: number; label: string }[]; class?: string };
 
@@ -18,7 +19,7 @@ const { items, class: className } = Astro.props;
   {items.map((t) => (
     <div class="bg-mist px-5 py-4">
       <dt class="text-slate text-sm">{t.label}</dt>
-      <dd class="font-semibold text-2xl tabular-nums tracking-tight">{t.n.toLocaleString('en')}</dd>
+      <dd class="font-semibold text-2xl tabular-nums tracking-tight">{num(t.n)}</dd>
     </div>
   ))}
 </dl>

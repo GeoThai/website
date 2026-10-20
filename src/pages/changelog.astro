@@ -5,8 +5,9 @@ import Totals from '@/components/place/totals.astro';
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
-import { DATA_VERSION, loadChangelog, loadData } from '@/lib/data';
+import { DATA_VERSION, downloadUrl, loadChangelog, loadData, releaseUrl } from '@/lib/data';
 import { parseChangelog } from '@/utils/changelog';
+import { count } from '@/utils/format';
 
 const releases = parseChangelog(await loadChangelog());
 const longDate = (iso: string) =>
@@ -18,15 +19,13 @@ const longDate = (iso: string) =>
   });
 const OPEN_UP_TO = 20;
 
-const { provinces, districts, subdistricts } = await loadData();
+const { provinces, districts, subdistricts, byPostal } = await loadData();
 const totals = [
   { n: provinces.length, label: 'provinces' },
   { n: districts.length, label: 'districts' },
   { n: subdistricts.length, label: 'subdistricts' },
-  { n: new Set(subdistricts.flatMap((s) => s.postal_codes)).size, label: 'postal codes' },
+  { n: byPostal.size, label: 'postal codes' },
 ];
-const download = (version: string, kind: 'json' | 'csv') =>
-  `https://github.com/GeoThai/data/releases/download/${version}/geothai-${kind}.zip`;
 ---
 
 <Base
@@ -50,7 +49,7 @@ const download = (version: string, kind: 'json' | 'csv') =>
             <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
               <h2 class="font-medium font-mono text-2xl tabular-nums">{r.version}</h2>
               <a
-                href={`https://github.com/GeoThai/data/releases/tag/${r.version}`}
+                href={releaseUrl(r.version)}
                 class="text-slate text-sm underline-offset-4 hover:text-black hover:underline"
               >
                 Release on GitHub
@@ -68,7 +67,7 @@ const download = (version: string, kind: 'json' | 'csv') =>
                 <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium">
                   <span>{s.label}</span>
                   <span class="flex items-center gap-3 text-slate text-sm tabular-nums">
-                    {s.count.toLocaleString('en')} {s.count === 1 ? 'area' : 'areas'}
+                    {count(s.count, 'area')}
                     <Icon
                       name="solar:alt-arrow-down-linear"
                       class="size-4 transition-transform group-open:rotate-180"
@@ -87,11 +86,11 @@ const download = (version: string, kind: 'json' | 'csv') =>
               </details>
             ))}
             <div class="mt-6 flex flex-wrap gap-3">
-              <Button href={download(r.version, 'json')} variant="quiet" size="sm">
+              <Button href={downloadUrl('json', r.version)} variant="quiet" size="sm">
                 <Icon name="solar:download-minimalistic-linear" class="size-4" aria-hidden="true" />
                 JSON
               </Button>
-              <Button href={download(r.version, 'csv')} variant="quiet" size="sm">
+              <Button href={downloadUrl('csv', r.version)} variant="quiet" size="sm">
                 <Icon name="solar:download-minimalistic-linear" class="size-4" aria-hidden="true" />
                 CSV
               </Button>

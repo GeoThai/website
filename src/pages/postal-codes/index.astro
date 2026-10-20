@@ -4,34 +4,25 @@ import ListFilter from '@/components/place/list-filter.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { loadData } from '@/lib/data';
+import { count } from '@/utils/format';
 
-const { provinces, districts, subdistricts } = await loadData();
-const provinceBy = new Map(provinces.map((p) => [p.code, p]));
-const districtBy = new Map(districts.map((d) => [d.code, d]));
-
-const byCode = new Map<string, typeof subdistricts>();
-for (const s of subdistricts) {
-  for (const code of s.postal_codes) byCode.set(code, [...(byCode.get(code) ?? []), s]);
-}
-const rows = [...byCode]
-  .sort(([a], [b]) => a.localeCompare(b))
-  .map(([code, places]) => {
-    const inProvinces = [...new Set(places.map((s) => s.province_code))].flatMap(
-      (c) => provinceBy.get(c) ?? [],
-    );
-    const inDistricts = [...new Set(places.map((s) => s.district_code))].flatMap(
-      (c) => districtBy.get(c) ?? [],
-    );
-    return {
-      code,
-      count: places.length,
-      where: inProvinces.map((p) => p.name_en).join(', '),
-      keys: [
-        code,
-        ...[...inProvinces, ...inDistricts].map((a) => `${a.name_th} ${a.name_en}`),
-      ].join(' '),
-    };
-  });
+const { byPostal, provinceBy, districtBy } = await loadData();
+const rows = [...byPostal].map(([code, places]) => {
+  const inProvinces = [...new Set(places.map((s) => s.province_code))].flatMap(
+    (c) => provinceBy.get(c) ?? [],
+  );
+  const inDistricts = [...new Set(places.map((s) => s.district_code))].flatMap(
+    (c) => districtBy.get(c) ?? [],
+  );
+  return {
+    code,
+    count: places.length,
+    where: inProvinces.map((p) => p.name_en).join(', '),
+    keys: [code, ...[...inProvinces, ...inDistricts].map((a) => `${a.name_th} ${a.name_en}`)].join(
+      ' ',
+    ),
+  };
+});
 ---
 
 <Base
@@ -63,7 +54,7 @@ const rows = [...byCode]
               <span class="font-semibold tabular-nums md:col-span-2">{r.code}</span>
               <span class="text-slate md:col-span-6">{r.where}</span>
               <span class="text-slate text-sm tabular-nums md:col-span-4 md:text-right">
-                {`${r.count} ${r.count === 1 ? 'subdistrict' : 'subdistricts'}`}
+                {count(r.count, 'subdistrict')}
               </span>
             </a>
           </li>

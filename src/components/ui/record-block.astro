@@ -1,0 +1,24 @@
+---
+import { cn } from '@/utils/cn';
+import { highlightRecord, type PlaceRecord, TONE } from '@/utils/record';
+
+type Props = { record: PlaceRecord; id?: string; class?: string };
+
+const { record, id, class: className } = Astro.props;
+---
+
+<code
+  id={id}
+  class={cn(
+    'block overflow-x-auto rounded-panel bg-black p-7 font-mono text-sm leading-relaxed',
+    className,
+  )}
+>
+  {highlightRecord(record).map((line) => (
+    <span class="block whitespace-pre">
+      {line.map((t) => (
+        <span class={TONE[t.tone]}>{t.text}</span>
+      ))}
+    </span>
+  ))}
+</code>

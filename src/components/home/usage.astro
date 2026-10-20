@@ -1,10 +1,9 @@
 ---
 import Container from '@/components/ui/container.astro';
+import RecordBlock from '@/components/ui/record-block.astro';
 import { startPlace } from '@/lib/data';
-import { highlightRecord, TONE } from '@/utils/record';
 
 const { subdistrict } = await startPlace();
-const lines = highlightRecord(subdistrict);
 ---
 
 <section id="use" aria-labelledby="usage-title" class="py-18 md:py-36">
@@ -18,18 +17,7 @@ const lines = highlightRecord(subdistrict);
         its postal codes. The same tables come as CSV.
       </p>
     </div>
-    <code
-      id="usage-record"
-      class="block overflow-x-auto rounded-panel bg-black p-7 font-mono text-sm leading-relaxed md:col-span-3"
-    >
-      {lines.map((line) => (
-        <span class="block whitespace-pre">
-          {line.map((t) => (
-            <span class={TONE[t.tone]}>{t.text}</span>
-          ))}
-        </span>
-      ))}
-    </code>
+    <RecordBlock id="usage-record" record={subdistrict} class="md:col-span-3" />
   </Container>
 </section>
 

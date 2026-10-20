@@ -2,6 +2,7 @@
 import Logo from '@/assets/logo.svg';
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
+import { REPO_URL } from '@/lib/data';
 
 const path = Astro.url.pathname;
 const links = [
@@ -14,7 +15,6 @@ const links = [
   { href: '/docs/', label: 'Docs', active: path.startsWith('/docs/') },
   { href: '/changelog/', label: 'Changelog', active: path.startsWith('/changelog/') },
 ];
-const data = 'https://github.com/GeoThai/data';
 ---
 
 <header
@@ -49,7 +49,7 @@ const data = 'https://github.com/GeoThai/data';
         inert={path === '/'}
         class="flex max-w-48 overflow-hidden rounded-full transition-all duration-700 ease-pill data-collapsed:-ml-6 data-collapsed:max-w-0 data-collapsed:opacity-0 max-md:hidden motion-reduce:transition-none"
       >
-        <Button href={data} class="whitespace-nowrap">Get the data</Button>
+        <Button href={REPO_URL} class="whitespace-nowrap">Get the data</Button>
       </span>
       <button
         id="menu-button"
@@ -120,7 +120,7 @@ const data = 'https://github.com/GeoThai/data';
           </li>
         ))}
       </ul>
-      <Button href={data}>Get the data</Button>
+      <Button href={REPO_URL}>Get the data</Button>
     </nav>
   </Container>
 </header>

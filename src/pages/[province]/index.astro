@@ -1,10 +1,12 @@
 ---
-import Breadcrumb from '@/components/place/breadcrumb.astro';
+import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
+import Source from '@/components/place/source.astro';
 import Totals from '@/components/place/totals.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
-import { DATA_VERSION, loadData, type Province } from '@/lib/data';
+import { loadData, type Province, postalCodes } from '@/lib/data';
+import { count } from '@/utils/format';
 import { areaSlug } from '@/utils/slug';
 
 export async function getStaticPaths() {
@@ -26,11 +28,10 @@ const rows = districts
       ...d,
       href: `/${areaSlug(province)}/${areaSlug(d)}/`,
       subdistricts: subs.length,
-      postal: [...new Set(subs.flatMap((s) => s.postal_codes))].sort(),
+      postal: postalCodes(subs),
     };
   });
-const postal = [...new Set(inProvince.flatMap((s) => s.postal_codes))].sort();
-const n = (x: number) => x.toLocaleString('en');
+const postal = postalCodes(inProvince);
 const totals = [
   { n: rows.length, label: 'districts' },
   { n: inProvince.length, label: 'subdistricts' },
@@ -40,24 +41,21 @@ const totals = [
 
 <Base
   title={`${province.name_en} (${province.name_th}): districts and postal codes · GeoThai`}
-  description={`${province.name_en} province, code ${province.code}: ${n(rows.length)} districts, ${n(inProvince.length)} subdistricts and ${n(postal.length)} postal codes, checked against official sources.`}
+  description={`${province.name_en} province, code ${province.code}: ${count(rows.length, 'district')}, ${count(inProvince.length, 'subdistrict')} and ${count(postal.length, 'postal code')}, checked against official sources.`}
 >
   <section id="place" class="py-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
-      <div>
-        <Breadcrumb
-          trail={[
-            { label: 'Home', href: '/' },
-            { label: 'Provinces', href: '/provinces/' },
-            { label: province.name_en },
-          ]}
-        />
-        <p class="mt-10 font-mono text-slate tabular-nums">{province.code}</p>
-        <h1 id="place-title" class="mt-2 text-display font-semibold tracking-tight text-balance">
-          {province.name_th}
-        </h1>
-        <p id="place-lead" class="mt-3 text-xl text-slate">{`${province.name_en} province`}</p>
-      </div>
+      <Heading
+        trail={[
+          { label: 'Home', href: '/' },
+          { label: 'Provinces', href: '/provinces/' },
+          { label: province.name_en },
+        ]}
+        kicker={province.code}
+        title={province.name_th}
+      >
+        {`${province.name_en} province`}
+      </Heading>
 
       <Totals items={totals} />
 
@@ -85,7 +83,7 @@ const totals = [
                 <span class="font-semibold md:col-span-3">{d.name_th}</span>
                 <span class="text-slate md:col-span-3">{d.name_en}</span>
                 <span class="text-slate text-sm md:col-span-2">
-                  {d.subdistricts} {d.subdistricts === 1 ? 'subdistrict' : 'subdistricts'}
+                  {count(d.subdistricts, 'subdistrict')}
                 </span>
                 <span class="font-mono text-slate text-sm tabular-nums md:col-span-3">
                   {d.postal.join(' ')}
@@ -96,16 +94,7 @@ const totals = [
         </ul>
       </div>
 
-      <p class="text-sm text-slate">
-        From{' '}
-        <a
-          href={`https://github.com/GeoThai/data/releases/tag/${DATA_VERSION}`}
-          class="font-mono underline underline-offset-4 hover:text-black"
-        >
-          GeoThai/data {DATA_VERSION}
-        </a>
-        .
-      </p>
+      <Source />
     </Container>
   </section>
 </Base>

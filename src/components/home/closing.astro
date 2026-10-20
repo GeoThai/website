@@ -1,10 +1,10 @@
 ---
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
-import { loadData } from '@/lib/data';
+import { loadData, REPO_URL } from '@/lib/data';
 
-const { subdistricts } = await loadData();
-const codes = [...new Set(subdistricts.flatMap((s) => s.postal_codes))].sort();
+const { byPostal } = await loadData();
+const codes = [...byPostal.keys()];
 // Every fourth code keeps each row a few screens wide instead of tens of thousands of pixels.
 const sample = codes.filter((_, i) => i % 4 === 0);
 const ROWS = 8;
@@ -35,7 +35,7 @@ const rows = Array.from({ length: ROWS }, (_, r) => sample.filter((_, i) => i % 
       <h2 id="closing-title" class="max-w-md text-title font-semibold tracking-tight text-balance">
         Build on places you can trust.
       </h2>
-      <Button href="https://github.com/GeoThai/data">Get the data on GitHub</Button>
+      <Button href={REPO_URL}>Get the data on GitHub</Button>
     </div>
   </Container>
 </section>
