@@ -5,13 +5,9 @@ import Container from '@/components/ui/container.astro';
 ---
 
 <header
-  class="sticky top-0 z-20 animate-fade-down border-b border-line bg-white/90 backdrop-blur-md motion-reduce:animate-none"
+  class="sticky top-0 z-20 h-(--header-height) animate-fade-down border-b border-line bg-white/90 backdrop-blur-md motion-reduce:animate-none"
 >
-  <Container
-    as="nav"
-    aria-label="Main"
-    class="flex h-(--header-height) items-center justify-between gap-6"
-  >
+  <Container as="nav" aria-label="Main" class="flex h-full items-center justify-between gap-6">
     <a href="/" class="-ml-3">
       <span class="sr-only">GeoThai home</span>
       <Logo class="h-10 w-auto" aria-hidden="true" />
