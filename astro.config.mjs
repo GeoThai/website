@@ -1,6 +1,7 @@
 // @ts-check
 import { readFileSync } from 'node:fs';
 
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, fontProviders } from 'astro/config';
 import icon from 'astro-icon';
@@ -8,7 +9,7 @@ import icon from 'astro-icon';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://geothai.fasu.dev',
-  integrations: [icon()],
+  integrations: [icon(), sitemap({ filter: (page) => !page.endsWith('/404/') })],
   fonts: [
     {
       provider: fontProviders.google(),
