@@ -1,14 +1,37 @@
 ---
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
+import { loadData } from '@/lib/data';
+
+const { subdistricts } = await loadData();
+const codes = [...new Set(subdistricts.flatMap((s) => s.postal_codes))].sort();
+// Every fourth code keeps each row a few screens wide instead of tens of thousands of pixels.
+const sample = codes.filter((_, i) => i % 4 === 0);
+const ROWS = 8;
+const rows = Array.from({ length: ROWS }, (_, r) => sample.filter((_, i) => i % ROWS === r));
 ---
 
 <section id="closing" aria-labelledby="closing-title" class="py-18 md:py-36">
   <Container>
     <div
       id="closing-panel"
-      class="grid justify-items-start gap-7 rounded-panel bg-mist p-12 md:p-24"
+      class="group relative isolate grid justify-items-start gap-7 overflow-hidden rounded-panel bg-mist p-12 md:p-24"
     >
+      <div aria-hidden="true" class="absolute inset-0 -z-10 grid content-center gap-1 select-none">
+        {rows.map((row, r) => (
+          <div
+            class:list={[
+              'flex w-max gap-8 font-semibold text-4xl text-black/6 tabular-nums tracking-tight group-data-paused:paused motion-reduce:animate-none',
+              r % 2 ? 'animate-drift-back' : 'animate-drift',
+            ]}
+          >
+            {[...row, ...row].map((code) => (
+              <span>{code}</span>
+            ))}
+          </div>
+        ))}
+        <div class="absolute inset-0 bg-linear-to-r from-mist via-mist/85 to-mist/0"></div>
+      </div>
       <h2 id="closing-title" class="max-w-md text-title font-semibold tracking-tight text-balance">
         Build on places you can trust.
       </h2>
@@ -24,4 +47,10 @@ import Container from '@/components/ui/container.astro';
   const title = document.getElementById('closing-title');
   const panel = document.getElementById('closing-panel');
   if (section && title && panel) revealSection(section, title, null, [panel]);
+  if (panel) {
+    panel.toggleAttribute('data-paused', true);
+    new IntersectionObserver(([entry]) => {
+      panel.toggleAttribute('data-paused', !entry?.isIntersecting);
+    }).observe(panel);
+  }
 </script>

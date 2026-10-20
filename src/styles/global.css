@@ -31,6 +31,18 @@
       transform: translateY(-100%);
     }
   }
+
+  --animate-drift: drift 120s linear infinite;
+  --animate-drift-back: drift 120s linear infinite reverse;
+  @keyframes drift {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@utility paused {
+  animation-play-state: paused;
 }
 
 @layer base {
