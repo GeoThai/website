@@ -1,0 +1,17 @@
+---
+import { cn } from '@/utils/cn';
+
+type Props = { code: string; class?: string };
+
+const { code, class: className } = Astro.props;
+const lines = code.replace(/\n$/, '').split('\n');
+---
+
+<code
+  class={cn(
+    'block overflow-x-auto rounded-panel bg-black p-7 font-mono text-sm leading-relaxed text-white',
+    className,
+  )}
+>
+  {lines.map((line) => <span class="block whitespace-pre">{line || ' '}</span>)}
+</code>

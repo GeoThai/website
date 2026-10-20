@@ -16,13 +16,25 @@ async function get<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+export type Field = {
+  name: string;
+  type: string;
+  description: string;
+  constraints?: { required?: boolean; pattern?: string; enum?: string[] };
+};
+export type DataPackage = {
+  counts: Record<string, number>;
+  resources: { name: string; path: string; format: string; schema?: { fields: Field[] } }[];
+};
+
 async function load() {
-  const [provinces, districts, subdistricts] = await Promise.all([
+  const [provinces, districts, subdistricts, datapackage] = await Promise.all([
     get<Province[]>('json/provinces.json'),
     get<District[]>('json/districts.json'),
     get<Subdistrict[]>('json/subdistricts.json'),
+    get<DataPackage>('datapackage.json'),
   ]);
-  return { provinces, districts, subdistricts };
+  return { provinces, districts, subdistricts, datapackage };
 }
 
 let cache: ReturnType<typeof load> | undefined;

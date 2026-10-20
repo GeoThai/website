@@ -1,0 +1,276 @@
+---
+import Button from '@/components/ui/button.astro';
+import CodeBlock from '@/components/ui/code-block.astro';
+import Container from '@/components/ui/container.astro';
+import Base from '@/layouts/base.astro';
+import { DATA_VERSION, loadData, startPlace } from '@/lib/data';
+import { highlightRecord, TONE } from '@/utils/record';
+
+const { districts, subdistricts, datapackage } = await loadData();
+const { subdistrict } = await startPlace();
+const record = highlightRecord(subdistrict);
+
+const cdn = `https://cdn.jsdelivr.net/gh/GeoThai/data@${DATA_VERSION}`;
+const release = `https://github.com/GeoThai/data/releases/tag/${DATA_VERSION}`;
+const download = (kind: 'json' | 'csv') =>
+  `https://github.com/GeoThai/data/releases/download/${DATA_VERSION}/geothai-${kind}.zip`;
+
+const bangkokDistricts = districts.filter((d) => d.province_code === '10').length;
+const samePostal = subdistricts.filter((s) => s.postal_codes.includes('10200')).length;
+const postalCodes = new Set(subdistricts.flatMap((s) => s.postal_codes)).size;
+const n = (x: number) => x.toLocaleString('en');
+const summary = `GeoThai is open data for ${n(datapackage.counts.provinces ?? 0)} provinces, ${n(datapackage.counts.districts ?? 0)} districts, ${n(datapackage.counts.subdistricts ?? 0)} subdistricts and ${n(postalCodes)} postal codes.`;
+
+const files = [
+  { path: 'json/provinces.json', what: 'Provinces', rows: datapackage.counts.provinces },
+  {
+    path: 'json/districts.json',
+    what: 'Districts, with their province',
+    rows: datapackage.counts.districts,
+  },
+  {
+    path: 'json/subdistricts.json',
+    what: 'Subdistricts, with their district, province and postal codes',
+    rows: datapackage.counts.subdistricts,
+  },
+  {
+    path: 'json/tree.json',
+    what: 'Province > district > subdistrict in one nested file',
+    rows: datapackage.counts.subdistricts,
+  },
+  {
+    path: 'json/abolished.json',
+    what: 'Areas that no longer exist, with the date they ended',
+    rows: datapackage.counts.abolished,
+  },
+  { path: 'csv/*.csv', what: 'The same tables as CSV, UTF-8 with a BOM', rows: undefined },
+  {
+    path: 'datapackage.json',
+    what: 'Field types, sources, license and row counts',
+    rows: undefined,
+  },
+];
+
+const tables = ['provinces', 'districts', 'subdistricts', 'abolished'].map((name) => ({
+  name,
+  fields: datapackage.resources.find((r) => r.name === `${name}-json`)?.schema?.fields ?? [],
+}));
+
+const js = `const base = '${cdn}';
+const tree = await (await fetch(\`\${base}/json/tree.json\`)).json();
+
+const bangkok = tree.find((province) => province.code === '10');
+console.log(bangkok.districts.length); // ${bangkokDistricts}`;
+
+const python = `import json, urllib.request
+
+url = "${cdn}/json/subdistricts.json"
+subdistricts = json.load(urllib.request.urlopen(url))
+
+same_code = [s for s in subdistricts if "10200" in s["postal_codes"]]
+print(len(same_code))  # ${samePostal}`;
+
+const treeShape = `[
+  {
+    "code": "10", "name_th": "...", "name_en": "Bangkok",
+    "districts": [
+      {
+        "code": "1001", "name_th": "...", "name_en": "Phra Nakhon",
+        "subdistricts": [
+          { "code": "100101", "name_th": "...", "name_en": "...", "postal_codes": ["10200"] }
+        ]
+      }
+    ]
+  }
+]`;
+
+const nav = [
+  { id: 'files', label: 'Files' },
+  { id: 'formats', label: 'Formats' },
+  { id: 'usage', label: 'Usage' },
+  { id: 'versions', label: 'Versions' },
+];
+---
+
+<Base
+  title="Docs · GeoThai"
+  description="Files, formats, usage and versions of the GeoThai data for Thailand's provinces, districts, subdistricts and postal codes."
+>
+  <Container class="grid gap-10 py-18 md:grid-cols-5 md:gap-20 md:py-24">
+    <aside class="md:col-span-1">
+      <nav aria-label="Docs" class="md:sticky md:top-24">
+        <p class="text-sm text-slate">On this page</p>
+        <ul class="mt-3 grid gap-1">
+          {nav.map((n) => (
+            <li>
+              <a href={`#${n.id}`} class="block py-1 text-slate hover:text-black">
+                {n.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="grid gap-24 md:col-span-4">
+      <section id="files" data-doc aria-labelledby="files-title">
+        <h1 id="files-title" class="text-title font-semibold tracking-tight text-balance">Docs</h1>
+        <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
+          {summary}{' '}
+          Every file below is in the{' '}
+          <a href="https://github.com/GeoThai/data" class="text-black underline underline-offset-4">
+            GeoThai/data
+          </a>{' '}
+          repository, release{' '}
+          <a href={release} class="font-mono text-black underline underline-offset-4">
+            {DATA_VERSION}
+          </a>
+          .
+        </p>
+        <ul class="mt-10 border-t border-line">
+          {files.map((f) => (
+            <li data-item class="grid gap-1 border-line border-b py-4 md:grid-cols-12 md:gap-6">
+              <span class="font-mono text-sm md:col-span-5">{f.path}</span>
+              <span class="text-slate md:col-span-5">{f.what}</span>
+              <span class="text-slate tabular-nums md:col-span-2 md:text-right">
+                {f.rows === undefined ? '' : f.rows.toLocaleString('en')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section id="formats" data-doc aria-labelledby="formats-title">
+        <h2 id="formats-title" class="text-title font-semibold tracking-tight text-balance">
+          Formats
+        </h2>
+        <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
+          The main files hold active areas only, sorted by code. Codes are strings, so a leading
+          zero never drops. Codes nest: 10 is a province, 1001 a district in it, 100101 a
+          subdistrict in that district.
+        </p>
+        <div class="mt-10 grid gap-10">
+          {tables.map((t) => (
+            <div data-item>
+              <h3 class="font-medium font-mono text-lg">{t.name}</h3>
+              <ul class="mt-3 border-line border-t">
+                {t.fields.map((f) => (
+                  <li class="grid gap-1 border-line border-b py-3 md:grid-cols-12 md:gap-6">
+                    <span class="font-mono text-sm md:col-span-3">{f.name}</span>
+                    <span class="font-mono text-slate text-sm md:col-span-2">{f.type}</span>
+                    <span class="text-slate md:col-span-7">{f.description}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <div data-item class="grid gap-4">
+            <h3 class="font-mono text-lg font-medium">subdistricts, one record</h3>
+            <code
+              class="block overflow-x-auto rounded-panel bg-black p-7 font-mono text-sm leading-relaxed"
+            >
+              {record.map((line) => (
+                <span class="block whitespace-pre">
+                  {line.map((t) => (
+                    <span class={TONE[t.tone]}>{t.text}</span>
+                  ))}
+                </span>
+              ))}
+            </code>
+            <p class="text-slate">
+              In CSV,{' '}
+              <span class="font-mono text-black">postal_codes</span>{' '}
+              is one cell with the codes separated by a space.
+            </p>
+          </div>
+          <div data-item class="grid gap-4">
+            <h3 class="font-mono text-lg font-medium">tree.json</h3>
+            <CodeBlock code={treeShape} />
+            <p class="text-slate">
+              Built for address forms: pick a province, then a district, then a subdistrict, from
+              one file.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="usage" data-doc aria-labelledby="usage-title">
+        <h2 id="usage-title" class="text-title font-semibold tracking-tight text-balance">Usage</h2>
+        <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
+          Pin a release in the URL, so the data does not change under you. jsDelivr serves every
+          file of every release.
+        </p>
+        <div class="mt-10 grid gap-10">
+          <div data-item class="grid gap-4">
+            <h3 class="text-lg font-semibold">JavaScript</h3>
+            <CodeBlock code={js} />
+          </div>
+          <div data-item class="grid gap-4">
+            <h3 class="text-lg font-semibold">Python</h3>
+            <CodeBlock code={python} />
+          </div>
+          <div data-item class="grid gap-4">
+            <h3 class="text-lg font-semibold">Spreadsheets</h3>
+            <p class="max-w-2xl text-slate">
+              Download the CSV files and open them in Excel, Google Sheets or Numbers. Each file
+              starts with a UTF-8 byte order mark, so Excel shows the Thai names without any import
+              settings.
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <Button href={download('csv')} variant="quiet" size="sm">geothai-csv.zip</Button>
+              <Button href={download('json')} variant="quiet" size="sm">geothai-json.zip</Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="versions" data-doc aria-labelledby="versions-title">
+        <h2 id="versions-title" class="text-title font-semibold tracking-tight text-balance">
+          Versions
+        </h2>
+        <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
+          A version is the release date in Thailand, such as{' '}
+          <span class="font-mono text-black">{DATA_VERSION}</span>.
+        </p>
+        <ul class="mt-10 border-t border-line">
+          <li data-item class="border-b border-line py-4 text-pretty">
+            A weekly rebuild reads every source again. It makes a release only if an area, a name or
+            a postal code changed.
+          </li>
+          <li data-item class="border-b border-line py-4 text-pretty">
+            A release never changes after it ships. Point your code at a version, not at the main
+            branch.
+          </li>
+          <li data-item class="border-b border-line py-4 text-pretty">
+            Each release lists every area that changed and why in the{' '}
+            <a href="/changelog/" class="underline underline-offset-4">changelog</a>.
+          </li>
+          <li data-item class="border-b border-line py-4 text-pretty">
+            Areas that are abolished leave the main files and move to{' '}
+            <span class="font-mono">abolished.json</span>, with the date they ended.
+          </li>
+          <li data-item class="border-b border-line py-4 text-pretty">
+            The old data, v1 to v4, has a different format. It stays on the{' '}
+            <a
+              href="https://github.com/GeoThai/data/tree/archive"
+              class="underline underline-offset-4"
+            >
+              archive
+            </a>{' '}
+            branch and the v1 to v4 tags.
+          </li>
+        </ul>
+      </section>
+    </div>
+  </Container>
+</Base>
+
+<script>
+  import { revealSection } from '@/lib/motion';
+
+  for (const section of document.querySelectorAll<HTMLElement>('[data-doc]')) {
+    const title = section.querySelector<HTMLElement>('h1, h2');
+    const items = [...section.querySelectorAll('[data-item]')];
+    if (title) revealSection(section, title, section.querySelector('[data-lead]'), items);
+  }
+</script>
