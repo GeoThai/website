@@ -43,3 +43,10 @@ export async function startPlace() {
   }
   return { province, district, subdistrict };
 }
+
+export async function loadChangelog() {
+  const url = `https://raw.githubusercontent.com/GeoThai/data/${DATA_VERSION}/CHANGELOG.md`;
+  const res = await fetch(url, { signal: AbortSignal.timeout(60_000) });
+  if (!res.ok) throw new Error(`GeoThai/data ${DATA_VERSION}: HTTP ${res.status} for CHANGELOG.md`);
+  return res.text();
+}
