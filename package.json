@@ -11,15 +11,22 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "preview": "astro preview",
+    "test": "bun test",
     "typecheck": "astro check"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.4.1",
+    "astro-icon": "^1.2.0",
+    "clsx": "^2.1.1",
+    "gsap": "^3.15.0",
+    "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.11",
+    "@iconify-json/solar": "^1.2.13",
+    "@types/bun": "^1.4.3",
     "oxfmt": "^0.74.0",
     "oxlint": "^1.89.0",
     "oxlint-tsgolint": "^7.0.2004",

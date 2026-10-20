@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+import { cn } from '@/utils/cn';
+
+type Props = HTMLAttributes<'article'> & { tone?: 'white' | 'mist' | 'black' };
+
+const { tone = 'white', class: className, ...rest } = Astro.props;
+---
+
+<article
+  class={cn(
+    'rounded-panel border',
+    tone === 'white' && 'border-line bg-white text-black',
+    tone === 'mist' && 'border-line bg-mist text-black',
+    tone === 'black' && 'border-black bg-black text-white',
+    className,
+  )}
+  {...rest}
+>
+  <slot />
+</article>

@@ -1,0 +1,223 @@
+---
+import SymbolWhite from '@/assets/symbol-white.svg';
+import Card from '@/components/ui/card.astro';
+import Container from '@/components/ui/container.astro';
+import Input from '@/components/ui/input.astro';
+
+const cards = [
+  { level: 'Province', th: 'สุราษฎร์ธานี', en: 'Surat Thani', code: '84', f: ['5', '6', 'pc'], fan: 'transform-[rotate(-9deg)_translateY(28px)]' },
+  { level: 'District', th: 'เกาะพะงัน', en: 'Ko Pha-ngan', code: '8405', f: ['3', '4', 'dc'], fan: 'transform-[rotate(-3deg)_translateY(6px)]' },
+  { level: 'Subdistrict', th: 'เกาะเต่า', en: 'Ko Tao', code: '840503', f: ['1', '2', '0'], fan: 'transform-[rotate(3deg)_translateY(6px)]' },
+];
+
+const card =
+  'relative grid h-70 w-59 flex-none origin-[50%_120%] content-start gap-1.5 -mx-5.5 px-6 py-6.5 text-left max-md:h-47 max-md:w-29.5 max-md:-mx-4 max-md:rounded-[20px] max-md:px-3 max-md:py-3.5';
+const level = 'mb-4.5 text-sm max-md:mb-2';
+---
+
+<section id="top" aria-labelledby="hero-title" class="overflow-hidden pt-[clamp(24px,4vw,56px)] pb-[clamp(64px,9vw,128px)]">
+  <Container class="grid justify-items-center text-center">
+    <h1 id="hero-title" class="max-w-[18ch] text-[clamp(2.4rem,1.3rem+3.4vw,4rem)] leading-[1.08] font-semibold tracking-tight text-balance">
+      Find any place in Thailand, down to the subdistrict.
+    </h1>
+    <p id="hero-lead" class="mt-5 max-w-[48ch] text-xl leading-normal text-pretty text-slate">
+      Province, district, subdistrict and postal code, from one search. Every value is checked against official sources.
+    </p>
+
+    <div id="hero-search" role="search" class="relative z-10 mt-7 w-[min(100%,560px)] text-left">
+      <label class="sr-only" for="q">Search a place</label>
+      <Input
+        icon="solar:magnifer-linear"
+        id="q"
+        type="search"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Search a place or postal code"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-controls="q-list"
+      />
+      <ul id="q-list" role="listbox" hidden class="absolute inset-x-0 top-16 z-20 rounded-[22px] border border-line bg-white p-1.5"></ul>
+      <p id="q-status" aria-live="polite" class="mt-2.5 min-h-6 text-center text-sm text-slate"></p>
+    </div>
+
+    <div
+      id="hand"
+      aria-live="polite"
+      aria-label="Where the place sits"
+      class="relative mt-5 flex h-85 w-full justify-center max-md:h-57.5 max-md:origin-top max-md:scale-[0.84]"
+    >
+      {
+        cards.map((c) => (
+          <Card tone={c.level === 'Province' ? 'mist' : 'white'} class:list={[card, c.fan]}>
+            <p class:list={[level, 'text-slate']}>{c.level}</p>
+            <p data-f={c.f[0]} class="text-[1.75rem] leading-[1.2] font-semibold tracking-[-0.01em] max-md:text-[0.98rem]">
+              {c.th}
+            </p>
+            <p data-f={c.f[1]} class="text-slate max-md:text-sm">{c.en}</p>
+            <p data-f={c.f[2]} class="absolute bottom-5.5 left-6 font-medium text-slate tabular-nums max-md:bottom-3.5 max-md:left-3.5 max-md:text-sm">
+              {c.code}
+            </p>
+          </Card>
+        ))
+      }
+      <Card tone="black" class:list={[card, 'transform-[rotate(9deg)_translateY(28px)]']}>
+        <p class:list={[level, 'text-[#a9adb4]']}>Postal code</p>
+        <p
+          data-f="7"
+          class="text-[3.4rem] leading-none font-semibold tracking-[-0.03em] tabular-nums wrap-anywhere data-many:text-[2.2rem] data-many:leading-[1.15] max-md:text-[1.7rem] max-md:data-many:text-[1.2rem]"
+        >
+          84360
+        </p>
+        <SymbolWhite class="absolute right-5.5 bottom-5.5 h-auto w-7 max-md:right-3.5 max-md:bottom-3.5 max-md:w-5" aria-hidden="true" />
+      </Card>
+    </div>
+  </Container>
+</section>
+
+<script>
+  import { gsap } from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
+
+  import { type Row, searchRows } from '@/utils/search';
+
+  gsap.registerPlugin(SplitText);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hand = document.getElementById('hand');
+  const cards = hand ? [...hand.children] : [];
+  const ROT = [-9, -3, 3, 9];
+  const LIFT = [28, 6, 6, 28];
+
+  function fill(r: Row) {
+    const values: Record<string, string> = {
+      0: r[0], 1: r[1], 2: r[2], 3: r[3], 4: r[4], 5: r[5], 6: r[6],
+      pc: r[0].slice(0, 2), dc: r[0].slice(0, 4),
+    };
+    for (const el of hand?.querySelectorAll<HTMLElement>('[data-f]') ?? []) {
+      const f = el.dataset.f ?? '';
+      if (f === '7') {
+        el.textContent = r[7].join(' ');
+        el.toggleAttribute('data-many', r[7].length > 1);
+      } else el.textContent = values[f] ?? '';
+    }
+  }
+
+  // Each pick deals the hand again: the old cards drop away, the new ones fan in from the left.
+  function deal(r: Row) {
+    if (reduce) return fill(r);
+    gsap
+      .timeline()
+      .to(cards, { y: 60, opacity: 0, rotation: 0, duration: 0.28, ease: 'power2.in', stagger: 0.04 })
+      .add(() => fill(r))
+      .fromTo(
+        cards,
+        { x: -80, y: 40, rotation: -14, opacity: 0 },
+        { x: 0, y: (i) => LIFT[i] ?? 0, rotation: (i) => ROT[i] ?? 0, opacity: 1, duration: 0.7, ease: 'back.out(1.4)', stagger: 0.07 },
+      );
+  }
+
+  const input = document.getElementById('q') as HTMLInputElement | null;
+  const list = document.getElementById('q-list');
+  const status = document.getElementById('q-status');
+  let rows: Row[] = [];
+  let results: Row[] = [];
+  let active = -1;
+
+  function render() {
+    if (!input || !list) return;
+    list.replaceChildren(
+      ...results.map((r, i) => {
+        const li = document.createElement('li');
+        li.id = `q-${i}`;
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', String(i === active));
+        li.className = 'grid cursor-pointer grid-cols-[1fr_auto] gap-x-4 rounded-2xl px-3.5 py-2.5 hover:bg-mist aria-selected:bg-mist';
+        const name = document.createElement('span');
+        name.className = 'font-semibold';
+        name.textContent = `${r[1]}  ${r[2]}`;
+        const path = document.createElement('span');
+        path.className = 'col-start-1 text-sm text-slate';
+        path.textContent = `${r[3]}, ${r[5]} · ${r[0]}`;
+        const postal = document.createElement('span');
+        postal.className = 'col-start-2 row-span-2 row-start-1 self-center text-slate tabular-nums';
+        postal.textContent = r[7].join(', ');
+        li.append(name, path, postal);
+        li.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          pick(i);
+        });
+        return li;
+      }),
+    );
+    list.hidden = results.length === 0;
+    input.setAttribute('aria-expanded', String(results.length > 0));
+    input.setAttribute('aria-activedescendant', active >= 0 ? `q-${active}` : '');
+  }
+
+  function pick(i: number) {
+    const r = results[i];
+    if (!r || !input || !status) return;
+    input.value = r[1];
+    results = [];
+    active = -1;
+    render();
+    status.textContent = `${r[1]} (${r[2]}), ${r[3]}, ${r[5]}. Postal code ${r[7].join(', ')}.`;
+    deal(r);
+  }
+
+  async function loadRows() {
+    if (!status) return;
+    try {
+      const res = await fetch('/data/search.json');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      rows = (await res.json()) as Row[];
+      status.textContent = `${rows.length.toLocaleString('en')} subdistricts ready to search.`;
+    } catch {
+      status.textContent = 'The place list did not load. Reload the page to try again.';
+    }
+  }
+  void loadRows();
+
+  input?.addEventListener('input', () => {
+    results = rows.length ? searchRows(rows, input.value) : [];
+    active = results.length ? 0 : -1;
+    render();
+    if (input.value && rows.length && !results.length && status) {
+      status.textContent = 'No place matches. Try the Thai or English name, or a postal code.';
+    }
+  });
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' && results.length) {
+      active = (active + 1) % results.length;
+      render();
+      e.preventDefault();
+    } else if (e.key === 'ArrowUp' && results.length) {
+      active = (active - 1 + results.length) % results.length;
+      render();
+      e.preventDefault();
+    } else if (e.key === 'Enter') {
+      pick(Math.max(active, 0));
+      e.preventDefault();
+    } else if (e.key === 'Escape') {
+      results = [];
+      render();
+    }
+  });
+  input?.addEventListener('blur', () => {
+    results = [];
+    render();
+  });
+
+  if (!reduce) {
+    gsap.set(cards, { rotation: (i) => ROT[i] ?? 0, y: (i) => LIFT[i] ?? 0 });
+    const title = document.getElementById('hero-title');
+    const words = title ? SplitText.create(title, { type: 'words', aria: 'auto' }).words : [];
+    gsap
+      .timeline({ defaults: { ease: 'power3.out' } })
+      .from(words, { yPercent: 70, opacity: 0, duration: 0.9, stagger: 0.06 })
+      .from('#hero-lead', { y: 16, opacity: 0, duration: 0.7 }, '-=0.5')
+      .from('#hero-search', { y: 16, opacity: 0, duration: 0.6 }, '-=0.45')
+      .from(cards, { y: 160, rotation: 0, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.09 }, '-=0.35');
+  }
+</script>

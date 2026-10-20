@@ -1,0 +1,26 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import { Icon } from 'astro-icon/components';
+
+import { cn } from '@/utils/cn';
+
+type Props = HTMLAttributes<'input'> & {
+  /** Iconify name shown before the text, e.g. "solar:magnifer-linear". */
+  icon?: string;
+};
+
+const { icon, class: className, ...rest } = Astro.props;
+---
+
+<div
+  class={cn(
+    'flex h-15 items-center gap-2.5 rounded-full border border-transparent bg-mist px-5.5 transition-colors focus-within:border-black focus-within:bg-white',
+    className,
+  )}
+>
+  {icon && <Icon name={icon} class="size-5.5 shrink-0 text-slate" aria-hidden="true" />}
+  <input
+    class="min-w-0 flex-1 bg-transparent text-xl outline-none placeholder:text-slate [&::-webkit-search-cancel-button]:appearance-none"
+    {...rest}
+  />
+</div>
