@@ -1,0 +1,39 @@
+---
+import SymbolBlack from '@/assets/symbol-black.svg';
+import Button from '@/components/ui/button.astro';
+import Container from '@/components/ui/container.astro';
+import Base from '@/layouts/base.astro';
+---
+
+<Base title="Page not found · GeoThai" description="This page does not exist on GeoThai.">
+  <Container class="grid justify-items-center py-24 text-center md:py-36">
+    <SymbolBlack id="lost-pin" class="h-auto w-16" aria-hidden="true" />
+    <h1 id="lost-title" class="mt-8 max-w-xl text-display font-semibold tracking-tight text-balance">This page is not on the map.</h1>
+    <p id="lost-lead" class="mt-5 max-w-xl text-xl leading-normal text-pretty text-slate">
+      The link may be old or mistyped. Every province, district and subdistrict is still one search away.
+    </p>
+    <div id="lost-actions" class="mt-12 flex flex-wrap justify-center gap-3">
+      <Button href="/">Search a place</Button>
+      <Button href="https://github.com/GeoThai/data" variant="quiet">Get the data</Button>
+    </div>
+  </Container>
+</Base>
+
+<script>
+  import { gsap } from 'gsap';
+  import { SplitText } from 'gsap/SplitText';
+
+  import { reduceMotion } from '@/lib/motion';
+
+  const title = document.getElementById('lost-title');
+  if (title && !reduceMotion()) {
+    gsap.registerPlugin(SplitText);
+    const words = SplitText.create(title, { type: 'words', aria: 'auto' }).words;
+    gsap
+      .timeline({ defaults: { ease: 'power3.out' } })
+      .from('#lost-pin', { y: -120, opacity: 0, duration: 1, ease: 'bounce.out' })
+      .from(words, { yPercent: 70, opacity: 0, duration: 0.8, stagger: 0.06 }, '-=0.45')
+      .from('#lost-lead', { y: 16, opacity: 0, duration: 0.6 }, '-=0.5')
+      .from('#lost-actions', { y: 12, opacity: 0, duration: 0.5 }, '-=0.35');
+  }
+</script>
