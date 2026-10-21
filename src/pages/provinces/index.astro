@@ -40,11 +40,14 @@ const trail = [{ label: 'Home', href: '/' }, { label: 'Provinces' }];
           <li class="border-line border-b" data-keys={`${p.code} ${p.name_th} ${p.name_en}`}>
             <a
               href={p.href}
-              class="grid gap-1 rounded-2xl px-3 py-4 transition-colors hover:bg-mist md:grid-cols-12 md:items-baseline md:gap-6"
+              class="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-2xl px-3 py-4 transition-colors hover:bg-mist md:grid md:grid-cols-12 md:gap-6"
             >
-              <span class="font-mono text-slate text-sm tabular-nums md:col-span-1">{p.code}</span>
               <span class="font-semibold md:col-span-4">{p.name_th}</span>
               <span class="text-slate md:col-span-3">{p.name_en}</span>
+              <span class="basis-full md:hidden" aria-hidden="true"></span>
+              <span class="font-mono text-slate text-sm tabular-nums md:order-first md:col-span-1">
+                {p.code}
+              </span>
               <span class="text-slate text-sm tabular-nums md:col-span-4 md:text-right">
                 {`${count(p.districts, 'district')} · ${count(p.subdistricts, 'subdistrict')}`}
               </span>
