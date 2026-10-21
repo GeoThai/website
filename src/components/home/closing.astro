@@ -21,7 +21,7 @@ const rows = Array.from({ length: ROWS }, (_, r) => sample.filter((_, i) => i % 
         {rows.map((row, r) => (
           <div
             class:list={[
-              'flex w-max gap-8 font-semibold text-4xl text-black/6 tabular-nums tracking-tight group-data-paused:paused motion-reduce:animate-none',
+              'flex w-max gap-8 font-semibold text-4xl text-black/6 tabular-nums tracking-display group-data-paused:paused motion-reduce:animate-none',
               r % 2 ? 'animate-drift-back' : 'animate-drift',
             ]}
           >
@@ -32,7 +32,10 @@ const rows = Array.from({ length: ROWS }, (_, r) => sample.filter((_, i) => i % 
         ))}
         <div class="absolute inset-0 bg-linear-to-r from-mist via-mist/85 to-mist/0"></div>
       </div>
-      <h2 id="closing-title" class="max-w-md text-title font-semibold tracking-tight text-balance">
+      <h2
+        id="closing-title"
+        class="max-w-md text-title font-semibold tracking-display text-balance"
+      >
         Build on places you can trust.
       </h2>
       <Button href={REPO_URL}>Get the data on GitHub</Button>

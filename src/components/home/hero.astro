@@ -37,7 +37,7 @@ const cards = [
 
 <section id="top" aria-labelledby="hero-title" class="overflow-hidden pt-6 pb-16 md:pt-14 md:pb-32">
   <Container class="grid justify-items-center text-center">
-    <h1 id="hero-title" class="max-w-2xl text-display font-semibold tracking-tight text-balance">
+    <h1 id="hero-title" class="max-w-2xl text-display font-semibold tracking-display text-balance">
       Find any place in Thailand, down to the subdistrict.
     </h1>
     <p id="hero-lead" class="mt-5 max-w-xl text-xl leading-normal text-pretty text-slate">
@@ -83,7 +83,7 @@ const cards = [
           <p class="mb-4.5 text-slate text-sm max-md:mb-2">{c.level}</p>
           <p
             data-f={c.f[0]}
-            class="wrap-break-word font-semibold text-card tracking-tight max-md:text-base"
+            class="wrap-break-word font-semibold text-card tracking-display max-md:text-base"
           >
             {c.th}
           </p>
@@ -100,7 +100,7 @@ const cards = [
         <p
           data-f="7"
           data-many={sub.postal_codes.length > 1 ? '' : undefined}
-          class="text-postal font-semibold tracking-tight tabular-nums wrap-anywhere data-many:text-4xl data-many:leading-tight max-md:text-2xl max-md:data-many:text-xl"
+          class="text-postal font-semibold tracking-display tabular-nums wrap-anywhere data-many:text-4xl data-many:leading-tight max-md:text-2xl max-md:data-many:text-xl"
         >
           {sub.postal_codes.join(' ')}
         </p>
