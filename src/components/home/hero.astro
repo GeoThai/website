@@ -14,7 +14,7 @@ const cards = [
     en: prov.name_en,
     code: prov.code,
     f: ['5', '6', 'pc'],
-    fan: '-rotate-9 translate-y-7',
+    fan: 'max-md:-rotate-2 md:-rotate-9 md:translate-y-7',
   },
   {
     level: 'District',
@@ -22,7 +22,7 @@ const cards = [
     en: dist.name_en,
     code: dist.code,
     f: ['3', '4', 'dc'],
-    fan: '-rotate-3 translate-y-1.5',
+    fan: 'max-md:rotate-1 md:-rotate-3 md:translate-y-1.5',
   },
   {
     level: 'Subdistrict',
@@ -30,7 +30,7 @@ const cards = [
     en: sub.name_en,
     code: sub.code,
     f: ['1', '2', '0'],
-    fan: 'rotate-3 translate-y-1.5',
+    fan: 'max-md:-rotate-1 md:rotate-3 md:translate-y-1.5',
   },
 ];
 ---
@@ -76,32 +76,38 @@ const cards = [
       id="hand"
       role="status"
       aria-label="Where the place sits"
-      class="relative mt-5 flex h-85 w-full justify-center max-md:h-57.5 max-md:origin-top max-md:scale-84"
+      class="relative mt-5 flex w-full justify-center max-md:mt-8 max-md:flex-col max-md:items-center md:h-85"
     >
       {cards.map((c) => (
         <HandCard tone={c.level === 'Province' ? 'mist' : 'white'} class={c.fan}>
-          <p class="mb-4.5 text-slate text-sm max-md:mb-2">{c.level}</p>
+          <p class="mb-4.5 text-slate text-sm max-md:mb-0 max-md:basis-full">{c.level}</p>
           <p
             data-f={c.f[0]}
             data-fit
-            class="wrap-break-word font-semibold text-card tracking-display max-md:text-sm"
+            class="wrap-break-word font-semibold text-card tracking-display max-md:text-base"
           >
             {c.th}
           </p>
-          <p data-f={c.f[1]} class="line-clamp-2 text-slate max-md:text-sm">
+          <p
+            data-f={c.f[1]}
+            class="line-clamp-2 text-slate max-md:line-clamp-none max-md:min-w-0 max-md:flex-1 max-md:truncate"
+          >
             {c.en}
           </p>
-          <p data-f={c.f[2]} class="mt-auto font-medium text-slate tabular-nums max-md:text-sm">
+          <p
+            data-f={c.f[2]}
+            class="mt-auto font-medium text-slate tabular-nums max-md:absolute max-md:top-3.5 max-md:right-5 max-md:mt-0 max-md:text-sm"
+          >
             {c.code}
           </p>
         </HandCard>
       ))}
-      <HandCard tone="black" class="rotate-9 translate-y-7">
-        <p class="mb-4.5 text-sm text-white/65 max-md:mb-2">Postal code</p>
+      <HandCard tone="black" class="max-md:rotate-2 md:rotate-9 md:translate-y-7">
+        <p class="mb-4.5 text-sm text-white/65 max-md:mb-0 max-md:basis-full">Postal code</p>
         <p
           data-f="7"
           data-many={sub.postal_codes.length > 1 ? '' : undefined}
-          class="text-postal font-semibold tracking-display tabular-nums wrap-anywhere data-many:text-4xl data-many:leading-tight max-md:text-2xl max-md:data-many:text-xl"
+          class="text-postal font-semibold tracking-display tabular-nums wrap-anywhere data-many:text-4xl data-many:leading-tight max-md:text-4xl max-md:data-many:text-2xl"
         >
           {sub.postal_codes.join(' ')}
         </p>
@@ -125,8 +131,10 @@ const cards = [
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hand = document.getElementById('hand');
   const cards = hand ? [...hand.children].filter((c) => c instanceof HTMLElement) : [];
-  const ROT = [-9, -3, 3, 9];
-  const LIFT = [28, 6, 6, 28];
+  // Phones stack the cards in a column, so they tilt less and do not lift.
+  const narrow = matchMedia('(width < 48rem)');
+  const rot = (i: number) => (narrow.matches ? [-2, 1, -1, 2] : [-9, -3, 3, 9])[i] ?? 0;
+  const lift = (i: number) => (narrow.matches ? 0 : ([28, 6, 6, 28][i] ?? 0));
 
   function fill(r: Row) {
     const values: Record<string, string> = {
@@ -166,7 +174,10 @@ const cards = [
     }
   }
   document.fonts.ready.then(fit);
-  matchMedia('(width < 48rem)').addEventListener('change', fit);
+  narrow.addEventListener('change', () => {
+    if (!reduce) gsap.set(cards, { rotation: rot, y: lift });
+    fit();
+  });
 
   function deal(r: Row) {
     if (reduce) return fill(r);
@@ -186,8 +197,8 @@ const cards = [
         { x: -80, y: 40, rotation: -14, opacity: 0 },
         {
           x: 0,
-          y: (i) => LIFT[i] ?? 0,
-          rotation: (i) => ROT[i] ?? 0,
+          y: lift,
+          rotation: rot,
           opacity: 1,
           duration: 0.7,
           ease: 'back.out(1.4)',
@@ -326,7 +337,7 @@ const cards = [
   });
 
   if (!reduce) {
-    gsap.set(cards, { rotation: (i) => ROT[i] ?? 0, y: (i) => LIFT[i] ?? 0 });
+    gsap.set(cards, { rotation: rot, y: lift });
     const title = document.getElementById('hero-title');
     const words = title ? SplitText.create(title, { type: 'words', aria: 'auto' }).words : [];
     gsap
