@@ -45,7 +45,7 @@ const trail = [
   title={`${district.name_en} (${district.name_th}), ${province.name_en}: subdistricts and postal codes · GeoThai`}
   description={`${district.name_en} district in ${province.name_en}, code ${district.code}: ${count(rows.length, 'subdistrict')} and postal codes ${postal.join(', ')}.`}
 >
-  <section id="place" class="py-18 md:py-24">
+  <section id="place" class="pt-10 pb-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
       <Heading trail={trail} kicker={district.code} title={district.name_th}>
         {`${district.name_en} district, `}

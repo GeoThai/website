@@ -10,7 +10,7 @@ const { trail } = Astro.props;
       <li class="flex items-center gap-2">
         {i > 0 && <span aria-hidden="true">/</span>}
         {step.href ? (
-          <a href={step.href} class="hover:text-black">
+          <a href={step.href} class="-my-1.5 inline-block py-1.5 hover:text-black">
             {step.label}
           </a>
         ) : (

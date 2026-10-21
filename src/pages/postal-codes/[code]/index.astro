@@ -42,7 +42,7 @@ const trail = [
   title={`Postal code ${code}: ${count(rows.length, 'subdistrict')} in ${where} · GeoThai`}
   description={`Postal code ${code} covers ${count(rows.length, 'subdistrict')} in ${where}: ${rows.map((r) => r.name_en).join(', ')}.`}
 >
-  <section id="place" class="py-18 md:py-24">
+  <section id="place" class="pt-10 pb-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
       <Heading trail={trail} kicker="Postal code" title={code}>
         {`${count(rows.length, 'subdistrict')} in ${where}`}
