@@ -22,6 +22,7 @@ const { subdistrict } = await startPlace();
 
 const bangkokDistricts = districts.filter((d) => d.province_code === '10').length;
 const samePostal = subdistricts.filter((s) => s.postal_codes.includes('10200')).length;
+const koTao = subdistricts.find((s) => s.code === '840503');
 const summary = `GeoThai is open data for ${count(datapackage.counts.provinces ?? 0, 'province')}, ${count(datapackage.counts.districts ?? 0, 'district')}, ${count(datapackage.counts.subdistricts ?? 0, 'subdistrict')} and ${count(byPostal.size, 'postal code')}.`;
 
 const files = [
@@ -73,6 +74,20 @@ subdistricts = json.load(urllib.request.urlopen(url))
 same_code = [s for s in subdistricts if "10200" in s["postal_codes"]]
 print(len(same_code))  # ${samePostal}`;
 
+const npmPackage = `npm install geothai
+
+import { address, search } from 'geothai';
+
+address('840503')?.subdistrict.name_en; // '${koTao?.name_en}'
+search('phangan').map((r) => r.level); // ['district', 'subdistrict']`;
+
+const pypiPackage = `pip install geothai
+
+from geothai import address, search
+
+address("840503").subdistrict.name_en  # '${koTao?.name_en}'
+[r.level for r in search("phangan")]  # ['district', 'subdistrict']`;
+
 const treeShape = `[
   {
     "code": "10", "name_th": "...", "name_en": "Bangkok",
@@ -90,6 +105,7 @@ const treeShape = `[
 const nav = [
   { id: 'files', label: 'Files' },
   { id: 'formats', label: 'Formats' },
+  { id: 'packages', label: 'Packages' },
   { id: 'usage', label: 'Usage' },
   { id: 'versions', label: 'Versions' },
 ];
@@ -187,11 +203,48 @@ const jsonLd = graph(await datasetLd());
         </div>
       </section>
 
+      <section id="packages" data-doc aria-labelledby="packages-title">
+        <h2 id="packages-title" class="text-title font-semibold tracking-tight text-balance">
+          Packages
+        </h2>
+        <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
+          The same data as a package for JavaScript and Python, with types, lookups by code and
+          postal code, and search by Thai or English name. Each data release ships as a patch
+          version.
+        </p>
+        <div class="mt-10 grid gap-10">
+          <div data-item class="grid gap-4">
+            <h3 class="text-lg font-semibold">JavaScript</h3>
+            <CodeBlock code={npmPackage} />
+            <div class="flex flex-wrap gap-3">
+              <Button href="https://www.npmjs.com/package/geothai" variant="quiet" size="sm">
+                geothai on npm
+              </Button>
+              <Button href="https://github.com/GeoThai/npm-packages" variant="quiet" size="sm">
+                GeoThai/npm-packages
+              </Button>
+            </div>
+          </div>
+          <div data-item class="grid gap-4">
+            <h3 class="text-lg font-semibold">Python</h3>
+            <CodeBlock code={pypiPackage} />
+            <div class="flex flex-wrap gap-3">
+              <Button href="https://pypi.org/project/geothai/" variant="quiet" size="sm">
+                geothai on PyPI
+              </Button>
+              <Button href="https://github.com/GeoThai/python-library" variant="quiet" size="sm">
+                GeoThai/python-library
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="usage" data-doc aria-labelledby="usage-title">
         <h2 id="usage-title" class="text-title font-semibold tracking-tight text-balance">Usage</h2>
         <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
-          Pin a release in the URL, so the data does not change under you. jsDelivr serves every
-          file of every release.
+          To read the files without a package, pin a release in the URL, so the data does not change
+          under you. jsDelivr serves every file of every release.
         </p>
         <div class="mt-10 grid gap-10">
           <div data-item class="grid gap-4">
