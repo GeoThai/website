@@ -83,7 +83,8 @@ const cards = [
           <p class="mb-4.5 text-slate text-sm max-md:mb-2">{c.level}</p>
           <p
             data-f={c.f[0]}
-            class="wrap-break-word font-semibold text-card tracking-display max-md:text-base"
+            data-fit
+            class="wrap-break-word font-semibold text-card tracking-display max-md:text-sm"
           >
             {c.th}
           </p>
@@ -146,7 +147,26 @@ const cards = [
         el.toggleAttribute('data-many', r[7].length > 1);
       } else el.textContent = values[f] ?? '';
     }
+    fit();
   }
+
+  // A Thai compound such as กรุงเทพมหานคร is one word to the line breaker, so a long name
+  // would break mid-word. Shrink it until it fits instead.
+  function fit() {
+    for (const el of hand?.querySelectorAll<HTMLElement>('[data-fit]') ?? []) {
+      el.style.fontSize = '';
+      el.style.overflowWrap = 'normal';
+      let size = Number.parseFloat(getComputedStyle(el).fontSize);
+      while (el.scrollWidth > el.clientWidth && size > 10) {
+        size -= 0.5;
+        el.style.fontSize = `${size}px`;
+      }
+      // shortcut: past 10px a word may still break mid-word, rather than be cut off.
+      if (el.scrollWidth > el.clientWidth) el.style.overflowWrap = '';
+    }
+  }
+  document.fonts.ready.then(fit);
+  matchMedia('(width < 48rem)').addEventListener('change', fit);
 
   function deal(r: Row) {
     if (reduce) return fill(r);
