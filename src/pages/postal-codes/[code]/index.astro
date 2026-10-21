@@ -2,11 +2,10 @@
 import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
 import Source from '@/components/place/source.astro';
-import Totals from '@/components/place/totals.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { loadData, parentsOf, type Subdistrict } from '@/lib/data';
-import { count, plural } from '@/utils/format';
+import { count } from '@/utils/format';
 import { breadcrumbs, graph } from '@/utils/schema';
 import { areaSlug } from '@/utils/slug';
 
@@ -45,16 +44,8 @@ const trail = [
   <section id="place" class="pt-10 pb-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
       <Heading trail={trail} kicker="Postal code" title={code}>
-        {`${count(rows.length, 'subdistrict')} in ${where}`}
+        {`${count(rows.length, 'subdistrict')} in ${count(inDistricts, 'district')} of ${where}.`}
       </Heading>
-
-      <Totals
-        items={[
-          { n: rows.length, label: plural(rows.length, 'subdistrict') },
-          { n: inDistricts, label: plural(inDistricts, 'district') },
-          { n: inProvinces.length, label: plural(inProvinces.length, 'province') },
-        ]}
-      />
 
       <div>
         <h2 class="text-2xl font-semibold tracking-tight">Subdistricts</h2>

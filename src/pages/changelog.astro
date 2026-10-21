@@ -1,7 +1,6 @@
 ---
 import { Icon } from 'astro-icon/components';
 
-import Totals from '@/components/place/totals.astro';
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
@@ -20,12 +19,7 @@ const longDate = (iso: string) =>
 const OPEN_UP_TO = 20;
 
 const { provinces, districts, subdistricts, byPostal } = await loadData();
-const totals = [
-  { n: provinces.length, label: 'provinces' },
-  { n: districts.length, label: 'districts' },
-  { n: subdistricts.length, label: 'subdistricts' },
-  { n: byPostal.size, label: 'postal codes' },
-];
+const totals = `This release holds ${count(provinces.length, 'province')}, ${count(districts.length, 'district')}, ${count(subdistricts.length, 'subdistrict')} and ${count(byPostal.size, 'postal code')}.`;
 ---
 
 <Base
@@ -61,7 +55,7 @@ const totals = [
             {r.notes.map((n) => (
               <p class="mt-4 text-pretty">{n}</p>
             ))}
-            {r.version === DATA_VERSION && <Totals items={totals} class="mt-6" />}
+            {r.version === DATA_VERSION && <p class="mt-4 text-pretty">{totals}</p>}
             {r.sections.map((s) => (
               <details
                 open={s.changes.length <= OPEN_UP_TO}

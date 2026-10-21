@@ -2,7 +2,6 @@
 import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
 import Source from '@/components/place/source.astro';
-import Totals from '@/components/place/totals.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { type District, loadData, type Province, postalCodes } from '@/lib/data';
@@ -52,14 +51,8 @@ const trail = [
         <a href={provinceHref} class="underline underline-offset-4 hover:text-black">
           {province.name_en}
         </a>
+        {`. ${count(rows.length, 'subdistrict')} and ${count(postal.length, 'postal code')}.`}
       </Heading>
-
-      <Totals
-        items={[
-          { n: rows.length, label: 'subdistricts' },
-          { n: postal.length, label: 'postal codes' },
-        ]}
-      />
 
       <div>
         <h2 class="text-2xl font-semibold tracking-tight">Subdistricts</h2>

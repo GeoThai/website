@@ -2,7 +2,6 @@
 import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
 import Source from '@/components/place/source.astro';
-import Totals from '@/components/place/totals.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
 import { loadData, type Province, postalCodes } from '@/lib/data';
@@ -33,11 +32,6 @@ const rows = districts
     };
   });
 const postal = postalCodes(inProvince);
-const totals = [
-  { n: rows.length, label: 'districts' },
-  { n: inProvince.length, label: 'subdistricts' },
-  { n: postal.length, label: 'postal codes' },
-];
 const page = new URL(Astro.url.pathname, Astro.site);
 const trail = [
   { label: 'Home', href: '/' },
@@ -54,10 +48,8 @@ const trail = [
   <section id="place" class="pt-10 pb-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
       <Heading trail={trail} kicker={province.code} title={province.name_th}>
-        {`${province.name_en} province`}
+        {`${province.name_en} province. ${count(rows.length, 'district')}, ${count(inProvince.length, 'subdistrict')} and ${count(postal.length, 'postal code')}.`}
       </Heading>
-
-      <Totals items={totals} />
 
       <div>
         <h2 class="text-2xl font-semibold tracking-tight">Districts</h2>
