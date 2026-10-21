@@ -100,6 +100,6 @@ The `production` environment on GitHub holds two secrets: `CLOUDFLARE_API_TOKEN`
 
 ## License
 
-The code, the GeoThai name and the logo are all rights reserved. See [LICENSE](./LICENSE).
+The code is [MIT](./LICENSE). The GeoThai name and logo are not part of it: see [TRADEMARKS.md](./TRADEMARKS.md).
 
 The data is [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). When you use the data, credit GeoThai.
