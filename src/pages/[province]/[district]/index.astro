@@ -46,12 +46,12 @@ const trail = [
 >
   <section id="place" class="pt-10 pb-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
-      <Heading trail={trail} kicker={district.code} title={district.name_th}>
-        {`${district.name_en} district, `}
+      <Heading trail={trail} title={district.name_th}>
+        {`${district.name_en} district in `}
         <a href={provinceHref} class="underline underline-offset-4 hover:text-black">
           {province.name_en}
         </a>
-        {`. ${count(rows.length, 'subdistrict')} and ${count(postal.length, 'postal code')}.`}
+        {`, code ${district.code}. ${count(rows.length, 'subdistrict')} and ${count(postal.length, 'postal code')}.`}
       </Heading>
 
       <div>

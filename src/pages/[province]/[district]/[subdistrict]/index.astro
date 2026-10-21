@@ -54,8 +54,8 @@ const trail = [
 >
   <section id="place" class="pt-10 pb-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
-      <Heading trail={trail} kicker={subdistrict.code} title={subdistrict.name_th}>
-        {`${subdistrict.name_en} subdistrict, `}
+      <Heading trail={trail} title={subdistrict.name_th}>
+        {`${subdistrict.name_en} subdistrict in `}
         <a href={districtHref} class="underline underline-offset-4 hover:text-black">
           {district.name_en}
         </a>
@@ -63,6 +63,7 @@ const trail = [
         <a href={provinceHref} class="underline underline-offset-4 hover:text-black">
           {province.name_en}
         </a>
+        {`, code ${subdistrict.code}.`}
       </Heading>
 
       <div class="grid gap-10 md:grid-cols-12 md:gap-6">

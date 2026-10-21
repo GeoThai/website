@@ -43,8 +43,8 @@ const trail = [
 >
   <section id="place" class="pt-10 pb-18 md:py-24">
     <Container class="grid grid-cols-1 gap-14">
-      <Heading trail={trail} kicker="Postal code" title={code}>
-        {`${count(rows.length, 'subdistrict')} in ${count(inDistricts, 'district')} of ${where}.`}
+      <Heading trail={trail} title={code}>
+        {`Postal code for ${count(rows.length, 'subdistrict')} in ${count(inDistricts, 'district')} of ${where}.`}
       </Heading>
 
       <div>
