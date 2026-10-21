@@ -74,16 +74,14 @@ subdistricts = json.load(urllib.request.urlopen(url))
 same_code = [s for s in subdistricts if "10200" in s["postal_codes"]]
 print(len(same_code))  # ${samePostal}`;
 
-const npmPackage = `npm install geothai
-
-import { address, search } from 'geothai';
+const npmInstall = 'npm install geothai';
+const npmPackage = `import { address, search } from 'geothai';
 
 address('840503')?.subdistrict.name_en; // '${koTao?.name_en}'
 search('phangan').map((r) => r.level); // ['district', 'subdistrict']`;
 
-const pypiPackage = `pip install geothai
-
-from geothai import address, search
+const pypiInstall = 'pip install geothai';
+const pypiPackage = `from geothai import address, search
 
 address("840503").subdistrict.name_en  # '${koTao?.name_en}'
 [r.level for r in search("phangan")]  # ['district', 'subdistrict']`;
@@ -226,6 +224,7 @@ const jsonLd = graph(await datasetLd());
         <div class="mt-10 grid gap-10">
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">JavaScript</h3>
+            <CodeBlock code={npmInstall} />
             <CodeBlock code={npmPackage} />
             <div class="flex flex-wrap gap-3">
               <Button href="https://www.npmjs.com/package/geothai" variant="quiet" size="sm">
@@ -238,6 +237,7 @@ const jsonLd = graph(await datasetLd());
           </div>
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">Python</h3>
+            <CodeBlock code={pypiInstall} />
             <CodeBlock code={pypiPackage} />
             <div class="flex flex-wrap gap-3">
               <Button href="https://pypi.org/project/geothai/" variant="quiet" size="sm">
