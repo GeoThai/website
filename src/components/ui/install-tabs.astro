@@ -1,0 +1,83 @@
+---
+import CodeBlock from '@/components/ui/code-block.astro';
+
+type Props = {
+  /** Unique on the page. Also the key that remembers the reader's choice. */
+  id: string;
+  label: string;
+  commands: { tool: string; code: string }[];
+};
+
+const { id, label, commands } = Astro.props;
+---
+
+<div data-tabs={id} class="grid gap-3">
+  <div role="tablist" aria-label={label} class="flex flex-wrap gap-1.5">
+    {commands.map((c, i) => (
+      <button
+        type="button"
+        role="tab"
+        id={`${id}-tab-${c.tool}`}
+        aria-controls={`${id}-panel-${c.tool}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        tabindex={i === 0 ? 0 : -1}
+        data-tool={c.tool}
+        class="min-h-9 rounded-full px-4 text-slate text-sm transition-colors hover:text-black aria-selected:bg-black aria-selected:text-white"
+      >
+        {c.tool}
+      </button>
+    ))}
+  </div>
+  {commands.map((c, i) => (
+    <div
+      role="tabpanel"
+      id={`${id}-panel-${c.tool}`}
+      aria-labelledby={`${id}-tab-${c.tool}`}
+      hidden={i !== 0}
+    >
+      <CodeBlock code={c.code} />
+    </div>
+  ))}
+</div>
+
+<script>
+  for (const box of document.querySelectorAll<HTMLElement>('[data-tabs]')) {
+    const key = `geothai:${box.dataset.tabs}`;
+    const tabs = [...box.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+
+    const show = (tab: HTMLButtonElement, focus = false) => {
+      for (const t of tabs) {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(t.getAttribute('aria-controls') ?? '');
+        if (panel) panel.hidden = !on;
+      }
+      if (focus) tab.focus();
+    };
+
+    const saved = tabs.find((t) => t.dataset.tool === localStorage.getItem(key));
+    if (saved) show(saved);
+
+    for (const [i, tab] of tabs.entries()) {
+      tab.addEventListener('click', () => {
+        show(tab);
+        localStorage.setItem(key, tab.dataset.tool ?? '');
+      });
+      tab.addEventListener('keydown', (e) => {
+        const target = {
+          ArrowRight: i + 1,
+          ArrowLeft: i - 1,
+          Home: 0,
+          End: tabs.length - 1,
+        }[e.key];
+        if (target === undefined) return;
+        const next = tabs[(target + tabs.length) % tabs.length];
+        if (!next) return;
+        e.preventDefault();
+        show(next, true);
+        localStorage.setItem(key, next.dataset.tool ?? '');
+      });
+    }
+  }
+</script>

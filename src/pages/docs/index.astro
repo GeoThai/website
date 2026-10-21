@@ -2,6 +2,7 @@
 import Button from '@/components/ui/button.astro';
 import CodeBlock from '@/components/ui/code-block.astro';
 import Container from '@/components/ui/container.astro';
+import InstallTabs from '@/components/ui/install-tabs.astro';
 import RecordBlock from '@/components/ui/record-block.astro';
 import Base from '@/layouts/base.astro';
 import {
@@ -74,13 +75,22 @@ subdistricts = json.load(urllib.request.urlopen(url))
 same_code = [s for s in subdistricts if "10200" in s["postal_codes"]]
 print(len(same_code))  # ${samePostal}`;
 
-const npmInstall = 'npm install geothai';
+const npmInstall = [
+  { tool: 'npm', code: 'npm install geothai' },
+  { tool: 'pnpm', code: 'pnpm add geothai' },
+  { tool: 'yarn', code: 'yarn add geothai' },
+  { tool: 'bun', code: 'bun add geothai' },
+];
 const npmPackage = `import { address, search } from 'geothai';
 
 address('840503')?.subdistrict.name_en; // '${koTao?.name_en}'
 search('phangan').map((r) => r.level); // ['district', 'subdistrict']`;
 
-const pypiInstall = 'pip install geothai';
+const pypiInstall = [
+  { tool: 'pip', code: 'pip install geothai' },
+  { tool: 'uv', code: 'uv add geothai' },
+  { tool: 'poetry', code: 'poetry add geothai' },
+];
 const pypiPackage = `from geothai import address, search
 
 address("840503").subdistrict.name_en  # '${koTao?.name_en}'
@@ -224,7 +234,7 @@ const jsonLd = graph(await datasetLd());
         <div class="mt-10 grid gap-10">
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">JavaScript</h3>
-            <CodeBlock code={npmInstall} />
+            <InstallTabs id="install-js" label="JavaScript package manager" commands={npmInstall} />
             <CodeBlock code={npmPackage} />
             <div class="flex flex-wrap gap-3">
               <Button href="https://www.npmjs.com/package/geothai" variant="quiet" size="sm">
@@ -237,7 +247,7 @@ const jsonLd = graph(await datasetLd());
           </div>
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">Python</h3>
-            <CodeBlock code={pypiInstall} />
+            <InstallTabs id="install-py" label="Python package manager" commands={pypiInstall} />
             <CodeBlock code={pypiPackage} />
             <div class="flex flex-wrap gap-3">
               <Button href="https://pypi.org/project/geothai/" variant="quiet" size="sm">
