@@ -6,20 +6,33 @@ import { cn } from '@/utils/cn';
 
 type Props = HTMLAttributes<'input'> & {
   icon?: string;
+  /** lg is 48px for filters in a page, xl is 60px for the main search. */
+  size?: 'lg' | 'xl';
 };
 
-const { icon, class: className, ...rest } = Astro.props;
+const { icon, size = 'xl', class: className, ...rest } = Astro.props;
 ---
 
 <div
   class={cn(
-    'flex h-15 items-center gap-2.5 rounded-full border border-transparent bg-mist px-5.5 transition-colors focus-within:border-black focus-within:bg-white',
+    'flex items-center rounded-full border border-transparent bg-mist transition-colors focus-within:border-black focus-within:bg-white',
+    size === 'lg' && 'h-12 gap-2 px-4.5',
+    size === 'xl' && 'h-15 gap-2.5 px-5.5',
     className,
   )}
 >
-  {icon && <Icon name={icon} class="size-5.5 shrink-0 text-slate" aria-hidden="true" />}
+  {icon && (
+    <Icon
+      name={icon}
+      class={cn('shrink-0 text-slate', size === 'lg' ? 'size-5' : 'size-5.5')}
+      aria-hidden="true"
+    />
+  )}
   <input
-    class="min-w-0 flex-1 bg-transparent text-xl outline-none placeholder:text-slate [&::-webkit-search-cancel-button]:appearance-none"
+    class={cn(
+      'min-w-0 flex-1 bg-transparent outline-none placeholder:text-slate [&::-webkit-search-cancel-button]:appearance-none',
+      size === 'lg' ? 'text-base' : 'text-xl',
+    )}
     {...rest}
   >
 </div>

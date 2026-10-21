@@ -18,6 +18,7 @@ const { list, noun, placeholder, class: className } = Astro.props;
   <label class="sr-only" for={`${list}-q`}>{`Filter ${noun}`}</label>
   <Input
     icon="solar:magnifer-linear"
+    size="lg"
     id={`${list}-q`}
     type="search"
     autocomplete="off"
