@@ -69,7 +69,7 @@ export const dataset = (d: DatasetInfo) => ({
   inLanguage: ['th', 'en'],
   keywords: ['Thailand', 'provinces', 'districts', 'subdistricts', 'postal codes', 'open data'],
   creator: { '@type': 'Organization', name: 'GeoThai', url: d.org },
-  spatialCoverage: { '@type': 'Country', name: 'Thailand' },
+  spatialCoverage: { '@type': 'Place', name: 'Thailand' },
   isBasedOn: d.sources,
   distribution: d.downloads.map((x) => ({
     '@type': 'DataDownload',
