@@ -18,7 +18,7 @@ import { count, num } from '@/utils/format';
 import { graph } from '@/utils/schema';
 
 const { districts, subdistricts, datapackage, byPostal } = await loadData();
-const { subdistrict } = await startPlace();
+const { province: startProvince, district: startDistrict, subdistrict } = await startPlace();
 
 const bangkokDistricts = districts.filter((d) => d.province_code === '10').length;
 const samePostal = subdistricts.filter((s) => s.postal_codes.includes('10200')).length;
@@ -90,12 +90,21 @@ address("840503").subdistrict.name_en  # '${koTao?.name_en}'
 
 const treeShape = `[
   {
-    "code": "10", "name_th": "...", "name_en": "Bangkok",
+    "code": "${startProvince.code}",
+    "name_th": "${startProvince.name_th}",
+    "name_en": "${startProvince.name_en}",
     "districts": [
       {
-        "code": "1001", "name_th": "...", "name_en": "Phra Nakhon",
+        "code": "${startDistrict.code}",
+        "name_th": "${startDistrict.name_th}",
+        "name_en": "${startDistrict.name_en}",
         "subdistricts": [
-          { "code": "100101", "name_th": "...", "name_en": "...", "postal_codes": ["10200"] }
+          {
+            "code": "${subdistrict.code}",
+            "name_th": "${subdistrict.name_th}",
+            "name_en": "${subdistrict.name_en}",
+            "postal_codes": [${subdistrict.postal_codes.map((c) => `"${c}"`).join(', ')}]
+          }
         ]
       }
     ]
