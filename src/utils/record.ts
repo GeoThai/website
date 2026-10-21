@@ -20,11 +20,11 @@ export const rowToRecord = (r: Row): PlaceRecord => ({
 
 export type Token = { text: string; tone: keyof typeof TONE };
 
-/** Alabaster-style: the data reads brightest, keys step back, punctuation steps back further. */
+/** The Poimandres colors that code-block.astro gives JSON, so both kinds of block match. */
 export const TONE = {
-  punct: 'text-white/50',
-  key: 'text-white/70',
-  value: 'text-white',
+  punct: 'text-[#a6accd]',
+  key: 'text-[#e4f0fb]',
+  value: 'text-[#5de4c7]',
 } as const;
 
 const value = (v: unknown): Token[] =>

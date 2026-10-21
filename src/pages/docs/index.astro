@@ -213,7 +213,7 @@ const jsonLd = graph(await datasetLd());
           </div>
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-medium">tree.json</h3>
-            <CodeBlock code={treeShape} />
+            <CodeBlock code={treeShape} lang="json" />
             <p class="text-slate">
               Built for address forms: pick a province, then a district, then a subdistrict, from
               one file.
@@ -235,7 +235,7 @@ const jsonLd = graph(await datasetLd());
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">JavaScript</h3>
             <InstallTabs id="install-js" label="JavaScript package manager" commands={npmInstall} />
-            <CodeBlock code={npmPackage} />
+            <CodeBlock code={npmPackage} lang="js" />
             <div class="flex flex-wrap gap-3">
               <Button href="https://www.npmjs.com/package/geothai" variant="quiet" size="sm">
                 geothai on npm
@@ -248,7 +248,7 @@ const jsonLd = graph(await datasetLd());
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">Python</h3>
             <InstallTabs id="install-py" label="Python package manager" commands={pypiInstall} />
-            <CodeBlock code={pypiPackage} />
+            <CodeBlock code={pypiPackage} lang="python" />
             <div class="flex flex-wrap gap-3">
               <Button href="https://pypi.org/project/geothai/" variant="quiet" size="sm">
                 geothai on PyPI
@@ -272,11 +272,11 @@ const jsonLd = graph(await datasetLd());
         <div class="mt-10 grid gap-10">
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">JavaScript</h3>
-            <CodeBlock code={js} />
+            <CodeBlock code={js} lang="js" />
           </div>
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">Python</h3>
-            <CodeBlock code={python} />
+            <CodeBlock code={python} lang="python" />
           </div>
           <div data-item class="grid gap-4">
             <h3 class="text-lg font-semibold">Spreadsheets</h3>
