@@ -9,7 +9,7 @@ const { tone = 'white', class: className } = Astro.props;
 <article
   class={cn(
     'relative flex h-70 w-59 flex-none origin-bottom flex-col gap-1.5 -mx-5.5 overflow-hidden rounded-panel border py-6.5 pr-9 pl-6 text-left',
-    'max-md:h-47 max-md:w-29.5 max-md:-mx-4 max-md:rounded-3xl max-md:py-3.5 max-md:pr-6 max-md:pl-3',
+    'max-md:h-47 max-md:w-29.5 max-md:-mx-4 max-md:rounded-panel max-md:py-3.5 max-md:pr-6 max-md:pl-3',
     tone === 'white' && 'border-line bg-white text-black',
     tone === 'mist' && 'border-line bg-mist text-black',
     tone === 'black' && 'border-black bg-black text-white',

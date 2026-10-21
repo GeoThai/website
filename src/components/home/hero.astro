@@ -67,7 +67,7 @@ const cards = [
         id="q-list"
         hidden
         data-lenis-prevent
-        class="absolute inset-x-0 top-16 z-20 max-h-96 overflow-y-auto overscroll-contain rounded-3xl border border-line bg-white p-1.5"
+        class="absolute inset-x-0 top-16 z-20 max-h-96 overflow-y-auto overscroll-contain rounded-panel border border-line bg-white p-1.5"
       ></ul>
       <p id="q-status" aria-live="polite" class="mt-2.5 min-h-6 text-center text-sm text-slate"></p>
     </search>
@@ -192,7 +192,7 @@ const cards = [
     li.setAttribute('role', 'option');
     li.setAttribute('aria-selected', 'false');
     li.className =
-      'flex cursor-pointer items-center justify-between gap-4 rounded-2xl px-3.5 py-2.5 hover:bg-mist aria-selected:bg-mist';
+      'flex cursor-pointer items-center justify-between gap-4 rounded-panel px-3.5 py-2.5 hover:bg-mist aria-selected:bg-mist';
     const text = document.createElement('span');
     const name = document.createElement('span');
     name.className = 'block font-semibold';
