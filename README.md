@@ -95,7 +95,8 @@ The `production` environment on GitHub holds two secrets: `CLOUDFLARE_API_TOKEN`
 - [Tailwind CSS](https://tailwindcss.com) v4 for styles
 - [GSAP](https://gsap.com) and [Lenis](https://lenis.darkroom.engineering) for motion. If the system asks for reduced motion, both stop.
 - [Biome](https://biomejs.dev) for format and lint
-- Fonts: Bai Jamjuree and JetBrains Mono
+- Fonts: Bai Jamjuree and JetBrains Mono, [SIL Open Font License 1.1](https://openfontlicense.org)
+- Icons: [Solar](https://www.figma.com/community/file/1166831539721848736) by 480 Design, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), through [Iconify](https://iconify.design)
 
 ## License
 
