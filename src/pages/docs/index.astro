@@ -123,10 +123,40 @@ const treeShape = `[
   }
 ]`;
 
+const mapsInstall = [
+  { tool: 'npm', code: 'npm install @geothai/maps' },
+  { tool: 'pnpm', code: 'pnpm add @geothai/maps' },
+  { tool: 'yarn', code: 'yarn add @geothai/maps' },
+  { tool: 'bun', code: 'bun add @geothai/maps' },
+];
+const mapsCode = `import { choropleth, fromNames, provinces, render, toSvg } from '@geothai/maps';
+
+const { found } = fromNames(['จ.เชียงใหม่', 'Phuket'], provinces);
+const { fills } = choropleth(provinces, { [found['จ.เชียงใหม่']]: 381, [found.Phuket]: 150 });
+const svg = toSvg(render(provinces, { fills, title: 'Thailand' }));`;
+const adapters = [
+  {
+    name: '@geothai/maps-react',
+    href: 'https://www.npmjs.com/package/@geothai/maps-react',
+    what: 'React 19',
+  },
+  {
+    name: '@geothai/maps-vue',
+    href: 'https://www.npmjs.com/package/@geothai/maps-vue',
+    what: 'Vue 3.5',
+  },
+  {
+    name: '@geothai/maps-svelte',
+    href: 'https://www.npmjs.com/package/@geothai/maps-svelte',
+    what: 'Svelte 5',
+  },
+];
+
 const nav = [
   { id: 'files', label: 'Files' },
   { id: 'formats', label: 'Formats' },
   { id: 'packages', label: 'Packages' },
+  { id: 'maps', label: 'Maps' },
   { id: 'usage', label: 'Usage' },
   { id: 'versions', label: 'Versions' },
 ];
@@ -259,6 +289,45 @@ const jsonLd = graph(await datasetLd());
               </Button>
               <Button href="https://github.com/GeoThai/python-library" variant="quiet" size="sm">
                 GeoThai/python-library
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="maps" data-doc aria-labelledby="maps-title">
+        <h2 id="maps-title" class="text-title font-semibold tracking-display text-balance">Maps</h2>
+        <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
+          Province, district and subdistrict maps on the same codes, as SVG. The shapes come from
+          GeoThai/boundaries, already projected, so a map needs no map library and renders on the
+          server. Names in any form become codes with fromNames().
+        </p>
+        <div class="mt-10 grid gap-10">
+          <div data-item class="grid gap-4">
+            <InstallTabs
+              id="install-maps"
+              label="JavaScript package manager"
+              commands={mapsInstall}
+            />
+            <CodeBlock code={mapsCode} lang="js" />
+            <p class="max-w-2xl text-slate">The same map as a component, with the same markup:</p>
+            <ul class="border-line border-t">
+              {adapters.map((a) => (
+                <li class="border-line border-b">
+                  <a
+                    href={a.href}
+                    class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 rounded-panel px-3 py-4 transition-colors hover:bg-mist"
+                  >
+                    <span class="font-semibold">{a.name}</span>
+                    <span class="text-slate text-sm">{a.what}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div class="flex flex-wrap gap-3">
+              <Button href="/map/" variant="quiet" size="sm">Try it with your table</Button>
+              <Button href="https://github.com/GeoThai/maps" variant="quiet" size="sm">
+                GeoThai/maps
               </Button>
             </div>
           </div>
