@@ -1,6 +1,7 @@
 ---
 import { Icon } from 'astro-icon/components';
 
+import ReleaseMap from '@/components/changelog/release-map.astro';
 import Button from '@/components/ui/button.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
@@ -49,13 +50,23 @@ const totals = `This release holds ${count(provinces.length, 'province')}, ${cou
                 Release on GitHub
               </a>
             </div>
-            <time datetime={r.date} class="mt-1 block text-slate text-sm">
-              {longDate(r.date)}
-            </time>
-            {r.notes.map((n) => (
-              <p class="mt-4 text-pretty">{n}</p>
-            ))}
-            {r.version === DATA_VERSION && <p class="mt-4 text-pretty">{totals}</p>}
+            <div class="mt-1 flex items-start justify-between gap-6">
+              <div>
+                <time datetime={r.date} class="block text-slate text-sm">
+                  {longDate(r.date)}
+                </time>
+                {r.notes.map((n) => (
+                  <p class="mt-4 text-pretty">{n}</p>
+                ))}
+                {r.version === DATA_VERSION && <p class="mt-4 text-pretty">{totals}</p>}
+              </div>
+              {r.sections.length > 0 && (
+                <ReleaseMap
+                  codes={r.sections.flatMap((s) => s.changes.map((c) => c.code))}
+                  version={r.version}
+                />
+              )}
+            </div>
             {r.sections.map((s) => (
               <details
                 open={s.changes.length <= OPEN_UP_TO}

@@ -1,0 +1,35 @@
+---
+import { choropleth, provincesSmall, render, toSvg } from '@geothai/maps';
+
+type Props = {
+  /** Codes of the areas the release changed. */
+  codes: string[];
+  version: string;
+};
+
+const { codes, version } = Astro.props;
+// The more areas a province had changed, the darker it is: Line, Slate, Black.
+const perProvince: Record<string, number> = {};
+for (const code of codes) perProvince[code.slice(0, 2)] = (perProvince[code.slice(0, 2)] ?? 0) + 1;
+const { fills } = choropleth(provincesSmall, perProvince, {
+  colors: ['#e4e4e7', '#5e636b', '#000000'],
+});
+const svg = toSvg(
+  render(provincesSmall, {
+    title: `Where ${version} changed areas, darker for more`,
+    fill: '#ffffff',
+    fills,
+    stroke: '#5e636b',
+  }),
+);
+---
+
+<div class="release-map w-24 shrink-0 md:w-28" set:html={svg} />
+
+<style>
+  .release-map :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>
