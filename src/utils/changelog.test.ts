@@ -55,3 +55,24 @@ test('parseChangelog reads releases newest first with their notes and sections',
 test('single-digit months and days get a padded date', () => {
   expect(parseChangelog('## v2027.1.5\n\nx\n')[0]?.date).toBe('2027-01-05');
 });
+
+test('parseChangelog labels successors and keeps the basis in the detail', () => {
+  const [release] = parseChangelog(`# Changelog
+
+## v2026.10.22
+
+### successors (2)
+
+- 104701: บางนา → 104702, 104703 from 2017-07-26
+- 100205: บางซื่อ → 102901 by name
+`);
+  expect(release?.sections[0]).toMatchObject({
+    kind: 'successors',
+    label: 'Replaced by',
+    count: 2,
+  });
+  expect(release?.sections[0]?.changes[1]).toEqual({
+    code: '100205',
+    detail: 'บางซื่อ → 102901 by name',
+  });
+});

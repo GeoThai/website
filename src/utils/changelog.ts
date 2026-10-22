@@ -11,6 +11,7 @@ const LABELS: Record<string, string> = {
   name_th: 'Thai names',
   name_en: 'English names',
   postal_codes: 'Postal codes',
+  successors: 'Replaced by',
 };
 
 /** Reads the CHANGELOG.md that GeoThai/source writes: `## vY.M.D`, notes, `### kind (n)`, `- code: detail`. */
