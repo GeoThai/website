@@ -49,6 +49,8 @@ Run `check`, `typecheck` and `test` before you commit. CI runs them on every pus
 
 ## Data
 
+The data comes from [GeoThai/data](https://github.com/GeoThai/data). To see how it is built and checked, read [How it is built](https://github.com/GeoThai/data#how-it-is-built).
+
 The site shows one release of GeoThai/data. The release is in `data.version`, such as `v2026.10.22`.
 
 `update.yml` moves the site to each new release by itself. It runs daily and on the `data-release` event that GeoThai/source sends when a release ships. To move by hand, write the new release tag in `data.version` and run `bun run build`.
