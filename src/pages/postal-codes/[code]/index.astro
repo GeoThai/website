@@ -1,4 +1,7 @@
 ---
+import { subdistrictMap } from '@geothai/maps';
+
+import AreaMap from '@/components/place/area-map.astro';
 import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
 import Source from '@/components/place/source.astro';
@@ -28,6 +31,27 @@ const rows = places.map((s) => {
 const inProvinces = [...new Map(rows.map((r) => [r.province.code, r.province])).values()];
 const inDistricts = new Set(rows.map((r) => r.district.code)).size;
 const where = inProvinces.map((p) => p.name_en).join(', ');
+// One subdistrict map per district the code covers. Black: the code is the only one of the
+// subdistrict. Slate: the subdistrict also uses another code.
+const districtMaps = await Promise.all(
+  [...new Map(rows.map((r) => [r.district.code, r])).values()].map(async (r) => {
+    const map = await subdistrictMap(r.district.code);
+    const inDistrict = data.subdistricts.filter((s) => s.district_code === r.district.code);
+    const fills = Object.fromEntries(
+      rows
+        .filter((s) => s.district.code === r.district.code)
+        .map((s) => [s.code, s.postal_codes.length === 1 ? '#000000' : '#5e636b']),
+    );
+    const hrefs = Object.fromEntries(
+      inDistrict.map((s) => [
+        s.code,
+        `/${areaSlug(r.province)}/${areaSlug(r.district)}/${areaSlug(s)}/`,
+      ]),
+    );
+    return { district: r.district, province: r.province, map, fills, hrefs };
+  }),
+);
+const shared = rows.some((r) => r.postal_codes.length > 1);
 const page = new URL(Astro.url.pathname, Astro.site);
 const trail = [
   { label: 'Home', href: '/' },
@@ -46,6 +70,34 @@ const trail = [
       <Heading trail={trail} title={code}>
         {`Postal code for ${count(rows.length, 'subdistrict')} in ${count(inDistricts, 'district')} of ${where}.`}
       </Heading>
+
+      <div class={districtMaps.length > 1 ? 'grid gap-6 md:grid-cols-2' : ''}>
+        {districtMaps.map((m) => (
+          <AreaMap
+            map={m.map}
+            hrefs={m.hrefs}
+            fills={m.fills}
+            title={`Subdistricts of ${m.district.name_en} that use ${code}`}
+            caption={
+              districtMaps.length > 1
+                ? `${m.district.name_th} ${m.district.name_en}, ${m.province.name_en}`
+                : undefined
+            }
+          />
+        ))}
+      </div>
+      <p class="-mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate">
+        <span class="flex items-center gap-2">
+          <span class="inline-block size-3 rounded-full bg-black" aria-hidden="true"></span>
+          {`Uses only ${code}`}
+        </span>
+        {shared && (
+          <span class="flex items-center gap-2">
+            <span class="inline-block size-3 rounded-full bg-slate" aria-hidden="true"></span>
+            {`Uses ${code} and another postal code`}
+          </span>
+        )}
+      </p>
 
       <div>
         <h2 class="text-2xl font-semibold tracking-display">Subdistricts</h2>

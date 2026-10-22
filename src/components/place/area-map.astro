@@ -11,18 +11,31 @@ type Props = {
   hrefs: Record<string, string>;
   /** Area to draw in black: the area of the current page. */
   current?: string;
+  /** More fills by code, such as the subdistricts that use a postal code. */
+  fills?: Record<string, string>;
+  /** Text under the map. */
+  caption?: string;
   title: string;
   class?: string;
 };
 
-const { map, hrefs, current, title, class: className } = Astro.props;
+const { map, hrefs, current, fills = {}, caption, title, class: className } = Astro.props;
+// A new khwaeng in Bangkok can sit inside an older shape that lists it in `codes`.
+const here = map.shapes.find((s) => current && (s.codes ?? [s.code]).includes(current))?.code;
+// Say so when a marked shape stands for several areas, so the map does not overstate one.
+const merged = map.shapes
+  .filter((s) => s.codes && (s.code === here || fills[s.code]))
+  .map(
+    (s) => `The boundary lines from 2022 draw ${s.name_en.replaceAll(' / ', ' and ')} as one area.`,
+  );
+const note = [caption, ...merged].filter(Boolean).join(' ');
 const svg = toSvg(
   render(map, {
     title,
     fill: '#ffffff',
-    fills: current ? { [current]: '#000000' } : {},
+    fills: here ? { ...fills, [here]: '#000000' } : fills,
     stroke: '#5e636b',
-    href: (s) => (s.code === current ? undefined : hrefs[s.code]),
+    href: (s) => (s.code === here ? undefined : hrefs[s.code]),
     label: (s) => `${s.name_th} ${s.name_en}`,
   }),
 );
@@ -35,6 +48,7 @@ const svg = toSvg(
     </div>
   )}
   <div class="area-map-shape mx-auto max-w-xl" set:html={svg} />
+  {note && <figcaption class="mt-5 text-center text-slate text-sm">{note}</figcaption>}
 </figure>
 
 <style>

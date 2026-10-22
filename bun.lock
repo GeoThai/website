@@ -6,7 +6,7 @@
       "name": "website",
       "dependencies": {
         "@astrojs/sitemap": "^3.7.4",
-        "@geothai/maps": "0.2.0",
+        "@geothai/maps": "0.3.0",
         "@tailwindcss/vite": "^4.3.3",
         "astro": "^7.4.1",
         "astro-icon": "^1.2.0",
@@ -211,7 +211,7 @@
 
     "@esbuild/win32-x64": ["@esbuild/win32-x64@0.28.2", "", { "os": "win32", "cpu": "x64" }, "sha512-5ebpxr3nWMzrL/rnUI755Jkuee0bHL/Gq0WTF9lvcpv73wAp5eu8MfBUgWK9bhWvZjj7yX8etf/8tI8Ney695g=="],
 
-    "@geothai/maps": ["@geothai/maps@0.2.0", "", {}, "sha512-2R8w6kPRPPZhHIfjTsxIQlSge67ImRsI+z3Z9TaDfy86dPbARuVHdJKF15nyvGYFpEqDO+EuY4WyLf8E3h1inQ=="],
+    "@geothai/maps": ["@geothai/maps@0.3.0", "", {}, "sha512-DV2PcfoBBumYYDD0qA5TUQUonRRCnIjWydB+gZFLYuT1zmluRo3UorUqV7dtV+rLhbt4wbs37jCdAodli60wTQ=="],
 
     "@iconify-json/solar": ["@iconify-json/solar@1.2.13", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-/ZWb6xRib6pzxD/qTkKWYhuzSU2yu0bY+EN0spgtz1NM3d5f4eYueQZpL3PfCdsg5uVfm4Ldtt3cAyQL+YI8/Q=="],
 

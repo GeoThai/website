@@ -1,4 +1,7 @@
 ---
+import { subdistrictMap } from '@geothai/maps';
+
+import AreaMap from '@/components/place/area-map.astro';
 import Heading from '@/components/place/heading.astro';
 import Source from '@/components/place/source.astro';
 import Container from '@/components/ui/container.astro';
@@ -31,6 +34,12 @@ const { province, district, subdistrict } = Astro.props as {
 const provinceHref = `/${areaSlug(province)}/`;
 const districtHref = `${provinceHref}${areaSlug(district)}/`;
 const many = subdistrict.postal_codes.length > 1;
+const { subdistricts } = await loadData();
+const hrefs = Object.fromEntries(
+  subdistricts
+    .filter((s) => s.district_code === district.code)
+    .map((s) => [s.code, `${districtHref}${areaSlug(s)}/`]),
+);
 const page = new URL(Astro.url.pathname, Astro.site);
 const trail = [
   { label: 'Home', href: '/' },
@@ -84,6 +93,13 @@ const trail = [
           <RecordBlock record={subdistrict} />
         </div>
       </div>
+
+      <AreaMap
+        map={await subdistrictMap(district.code)}
+        hrefs={hrefs}
+        current={subdistrict.code}
+        title={`${subdistrict.name_en} in ${district.name_en}`}
+      />
 
       <Source />
     </Container>
