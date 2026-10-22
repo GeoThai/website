@@ -71,7 +71,9 @@ const url = new URL(Astro.url.pathname, Astro.site);
 </html>
 
 <script>
+  import { initMapTooltips } from '@/lib/map-tooltip';
   import { initSmoothScroll } from '@/lib/smooth-scroll';
 
   initSmoothScroll();
+  initMapTooltips();
 </script>

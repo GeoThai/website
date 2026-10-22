@@ -41,7 +41,7 @@ const svg = toSvg(
 );
 ---
 
-<figure class={cn('area-map relative rounded-panel bg-mist p-6 md:p-10', className)}>
+<figure data-tooltips class={cn('area-map relative rounded-panel bg-mist p-6 md:p-10', className)}>
   {Astro.slots.has('inset') && (
     <div class="mb-4 flex justify-end md:pointer-events-none md:absolute md:top-10 md:right-10 md:mb-0">
       <slot name="inset" />

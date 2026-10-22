@@ -1,6 +1,8 @@
 ---
 import { choropleth, provincesSmall, render, toSvg } from '@geothai/maps';
 
+import { count } from '@/utils/format';
+
 type Props = {
   /** Codes of the areas the release changed. */
   codes: string[];
@@ -20,11 +22,15 @@ const svg = toSvg(
     fill: '#ffffff',
     fills,
     stroke: '#5e636b',
+    label: (s) => {
+      const n = perProvince[s.code];
+      return n ? `${s.name_th} ${s.name_en}: ${count(n, 'area')}` : `${s.name_th} ${s.name_en}`;
+    },
   }),
 );
 ---
 
-<div class="release-map w-24 shrink-0 md:w-28" set:html={svg} />
+<div data-tooltips class="release-map w-24 shrink-0 md:w-28" set:html={svg} />
 
 <style>
   .release-map :global(svg) {
