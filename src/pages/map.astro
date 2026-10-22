@@ -1,0 +1,258 @@
+---
+import { provinces, provincesSmall, render, toSvg } from '@geothai/maps';
+
+import Button from '@/components/ui/button.astro';
+import Container from '@/components/ui/container.astro';
+import Base from '@/layouts/base.astro';
+import { areaSlug } from '@/utils/slug';
+
+const provinceList = provinces.shapes.map((s) => ({
+  code: s.code,
+  name: s.name_th,
+  slug: areaSlug({ code: s.code, name_en: s.name_en }),
+}));
+const hrefs = Object.fromEntries(provinceList.map((p) => [p.code, `/${p.slug}/`]));
+const preview = toSvg(
+  render(provincesSmall, {
+    title: 'Your table, on the map of Thailand',
+    fill: '#ffffff',
+    stroke: '#5e636b',
+  }),
+);
+const sample = [
+  'จังหวัด\tผู้ใช้ใหม่',
+  'กรุงเทพมหานคร\t1,204',
+  'จ.เชียงใหม่\t381',
+  'Chon Buri\t290',
+  'ขอนแก่น\t210',
+  'จ.สุราษฎร์ธานี\t180',
+  'ภูเก็ต\t150',
+].join('\n');
+---
+
+<Base
+  title="Draw a map from your table · GeoThai"
+  description="Paste a table of Thai province names and numbers, and get a map on official codes. Nothing leaves your browser."
+>
+  <section id="map" class="pt-10 pb-18 md:py-24">
+    <Container class="grid grid-cols-1 gap-14">
+      <div>
+        <div class="flex flex-wrap items-baseline gap-x-6">
+          <h1 id="map-title" class="text-title font-semibold tracking-display text-balance">Map</h1>
+          <p class="text-sm text-slate">Runs in your browser. Nothing is uploaded.</p>
+        </div>
+        <p class="mt-3 max-w-2xl text-xl text-slate text-pretty">
+          Paste a table of province names and numbers, the way your spreadsheet holds them. GeoThai
+          turns the names into official codes and draws the map.
+        </p>
+      </div>
+
+      <div class="grid gap-10 lg:grid-cols-2">
+        <div class="grid content-start gap-4">
+          <fieldset class="flex items-center gap-2">
+            <legend class="sr-only">What your names are</legend>
+            <button
+              type="button"
+              data-level="province"
+              aria-pressed="true"
+              class="min-h-9 rounded-full border border-line px-4 text-black text-sm transition-colors hover:bg-mist aria-pressed:border-black aria-pressed:bg-black aria-pressed:text-white"
+            >
+              Provinces
+            </button>
+            <button
+              type="button"
+              data-level="district"
+              aria-pressed="false"
+              class="min-h-9 rounded-full border border-line px-4 text-black text-sm transition-colors hover:bg-mist aria-pressed:border-black aria-pressed:bg-black aria-pressed:text-white"
+            >
+              Districts of…
+            </button>
+          </fieldset>
+          <input
+            id="map-province"
+            data-input="province"
+            list="map-province-list"
+            placeholder="Surat Thani"
+            aria-label="Province"
+            hidden
+            class="h-12 rounded-full border border-line bg-white px-5 outline-none placeholder:text-slate focus:border-black"
+          >
+          <datalist id="map-province-list">
+            {provinceList.map((p) => <option value={p.name} />)}
+          </datalist>
+          <label class="grid flex-1 gap-2" for="map-table">
+            <span class="text-sm text-slate">Your table</span>
+            <textarea
+              id="map-table"
+              rows="12"
+              spellcheck="false"
+              placeholder={`จังหวัด\tยอด\nกทม\t1,204\nจ.เชียงใหม่\t381`}
+              class="rounded-panel border border-line bg-white p-5 text-sm outline-none placeholder:text-slate focus:border-black"
+            >{sample}</textarea>
+          </label>
+          <div class="flex flex-wrap items-center gap-3">
+            <Button data-action="draw">Draw</Button>
+            <p class="text-sm text-slate" data-status role="status"></p>
+          </div>
+          <div data-unmatched class="hidden rounded-panel bg-mist p-5 text-sm">
+            <p class="font-medium">Names not placed</p>
+            <ul class="mt-2 grid gap-1" data-list></ul>
+          </div>
+        </div>
+
+        <div class="grid content-start gap-6">
+          <div
+            id="map-frame"
+            class="rounded-panel border border-line p-6"
+            data-hrefs={JSON.stringify(hrefs)}
+            set:html={preview}
+          />
+          <div class="hidden flex-wrap gap-x-6 gap-y-2 text-sm text-slate" data-legend></div>
+          <div class="flex flex-wrap gap-3">
+            <Button data-action="csv" variant="quiet" size="sm" href="#" download="geothai-map.csv"
+              >Codes CSV</Button
+            >
+            <Button data-action="svg" variant="quiet" size="sm" href="#" download="geothai-map.svg"
+              >SVG</Button
+            >
+            <a
+              href="https://academy.datawrapper.de/article/145-how-to-upload-your-own-map"
+              class="text-sm text-slate underline underline-offset-4 hover:text-black"
+            >
+              Draw it in Datawrapper with our files
+            </a>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </section>
+</Base>
+
+<style>
+  .map-frame :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: min(36rem, 75vh);
+    margin-inline: auto;
+  }
+</style>
+
+<script>
+  import {
+    choropleth,
+    districtMap,
+    fromNames,
+    hasDistrictMap,
+    provinces,
+    render,
+    toSvg,
+  } from '@geothai/maps';
+  import type { MapShapes } from '@geothai/maps/types';
+
+  import { closestName } from '@/utils/names';
+  import { parseTable, toCsv } from '@/utils/table';
+
+  // Line, Slate and Black: the steps of the palette that stay apart on a white map.
+  const COLORS = ['#e4e4e7', '#5e636b', '#000000'];
+
+  const table = document.getElementById('map-table') as HTMLTextAreaElement;
+  const status = document.querySelector('[data-status]') as HTMLElement;
+  const frame = document.getElementById('map-frame') as HTMLElement;
+  const legend = document.querySelector('[data-legend]') as HTMLElement;
+  const unmatchedBox = document.querySelector('[data-unmatched]') as HTMLElement;
+  const list = document.querySelector('[data-list]') as HTMLElement;
+  const hrefs = JSON.parse(frame.dataset.hrefs ?? '{}') as Record<string, string>;
+
+  const level = () =>
+    document.querySelector<HTMLButtonElement>('[data-level][aria-pressed="true"]')?.dataset.level ??
+    'province';
+
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-level]')) {
+    b.addEventListener('click', () => {
+      for (const t of document.querySelectorAll('[data-level]'))
+        t.setAttribute('aria-pressed', 'false');
+      b.setAttribute('aria-pressed', 'true');
+      const input = document.querySelector('[data-input="province"]') as HTMLElement;
+      input.hidden = b.dataset.level !== 'district';
+    });
+  }
+
+  const draw = async () => {
+    const { rows } = parseTable(table.value);
+    if (!rows.length) {
+      status.textContent = 'Nothing to draw yet.';
+      return;
+    }
+    const small = level() === 'province';
+    let map: MapShapes = provinces;
+    if (!small) {
+      const name = (
+        document.querySelector('[data-input="province"]') as HTMLInputElement
+      ).value.trim();
+      const code = fromNames([name], provinces).found[name];
+      if (!code || !hasDistrictMap(code)) {
+        status.textContent = `No province matches "${name}".`;
+        return;
+      }
+      map = await districtMap(code);
+    }
+    const { found, unmatched } = fromNames(
+      rows.map((r) => r.name),
+      map,
+    );
+    const values = Object.fromEntries(
+      rows.flatMap((r) => (found[r.name] ? [[found[r.name], r.value] as const] : [])),
+    );
+    const { fills, legend: steps } = choropleth(map, values, { colors: COLORS });
+    // Whole numbers in, whole numbers in the legend: a cut between rows is not a real value.
+    const whole = rows.every((r) => Number.isInteger(r.value));
+    const format = (n: number) => n.toLocaleString('en', { maximumFractionDigits: whole ? 0 : 2 });
+    legend.classList.remove('hidden');
+    legend.classList.add('flex');
+    legend.replaceChildren(
+      ...steps.map((step) => {
+        const item = document.createElement('span');
+        item.className = 'flex items-center gap-2';
+        const swatch = document.createElement('span');
+        swatch.className = 'inline-block size-3 rounded-full border border-line';
+        swatch.style.background = step.color;
+        item.append(swatch, `${format(step.from)} to ${format(step.to)}`);
+        return item;
+      }),
+    );
+    const svg = toSvg(
+      render(map, {
+        fills,
+        fill: '#ffffff',
+        title: small ? 'Thailand' : 'Your data',
+        href: small ? (s) => hrefs[s.code] : undefined,
+        stroke: '#5e636b',
+      }),
+    );
+    frame.querySelector('svg')?.remove();
+    frame.insertAdjacentHTML('beforeend', svg);
+    status.textContent = `${Object.keys(found).length} of ${rows.length} names placed.${
+      unmatched.length ? ` ${unmatched.length} left below.` : ''
+    }`;
+    unmatchedBox.classList.toggle('hidden', !unmatched.length);
+    list.replaceChildren(
+      ...unmatched.map((name) => {
+        const li = document.createElement('li');
+        const hit = closestName(name, map.shapes);
+        li.textContent = hit
+          ? `${name}: did you mean ${hit.name_th} (${hit.code})?`
+          : `${name}: no area of this map has this name.`;
+        return li;
+      }),
+    );
+    const csv = new Blob([toCsv(rows, found)], { type: 'text/csv' });
+    (document.querySelector('[data-action="csv"]') as HTMLAnchorElement).href =
+      URL.createObjectURL(csv);
+    const file = new Blob([svg], { type: 'image/svg+xml' });
+    (document.querySelector('[data-action="svg"]') as HTMLAnchorElement).href =
+      URL.createObjectURL(file);
+  };
+
+  document.querySelector('[data-action="draw"]')?.addEventListener('click', () => void draw());
+</script>

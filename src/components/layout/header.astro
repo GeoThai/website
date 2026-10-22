@@ -12,6 +12,7 @@ const links = [
     active: path === '/provinces/' || /^\/\d{2}-/.test(path),
   },
   { href: '/postal-codes/', label: 'Postal codes', active: path.startsWith('/postal-codes/') },
+  { href: '/map/', label: 'Map', active: path.startsWith('/map/') },
   { href: '/docs/', label: 'Docs', active: path.startsWith('/docs/') },
   { href: '/changelog/', label: 'Changelog', active: path.startsWith('/changelog/') },
 ];
