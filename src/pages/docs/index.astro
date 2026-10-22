@@ -45,7 +45,7 @@ const files = [
   },
   {
     path: 'json/abolished.json',
-    what: 'Areas that no longer exist, with the date they ended',
+    what: 'Areas that no longer exist, with the date they ended and the codes that took their place',
     rows: datapackage.counts.abolished,
   },
   { path: 'csv/*.csv', what: 'The same tables as CSV, UTF-8 with a BOM', rows: undefined },
@@ -81,20 +81,24 @@ const npmInstall = [
   { tool: 'yarn', code: 'yarn add geothai' },
   { tool: 'bun', code: 'bun add geothai' },
 ];
-const npmPackage = `import { address, search } from 'geothai';
+const npmPackage = `import { address, match, search } from 'geothai';
 
 address('840503')?.subdistrict.name_en; // '${koTao?.name_en}'
-search('phangan').map((r) => r.level); // ['district', 'subdistrict']`;
+search('phangan').map((r) => r.level); // ['district', 'subdistrict']
+match({ subdistrict: 'ต.ตลาด', district: 'อ.เมือง', province: 'สุราษฎร์ธานี' })[0]?.subdistrict.code;
+// '840101'`;
 
 const pypiInstall = [
   { tool: 'pip', code: 'pip install geothai' },
   { tool: 'uv', code: 'uv add geothai' },
   { tool: 'poetry', code: 'poetry add geothai' },
 ];
-const pypiPackage = `from geothai import address, search
+const pypiPackage = `from geothai import address, match, search
 
 address("840503").subdistrict.name_en  # '${koTao?.name_en}'
-[r.level for r in search("phangan")]  # ['district', 'subdistrict']`;
+[r.level for r in search("phangan")]  # ['district', 'subdistrict']
+match("ต.ตลาด", district="อ.เมือง", province="สุราษฎร์ธานี")[0].subdistrict.code
+# '840101'`;
 
 const treeShape = `[
   {
@@ -228,8 +232,8 @@ const jsonLd = graph(await datasetLd());
         </h2>
         <p data-lead class="mt-5 max-w-2xl text-xl leading-normal text-pretty text-slate">
           The same data as a package for JavaScript and Python, with types, lookups by code and
-          postal code, and search by Thai or English name. Each data release ships as a patch
-          version.
+          postal code, search by Thai or English name, and a match for hand-written addresses. Each
+          data release ships as a patch version.
         </p>
         <div class="mt-10 grid gap-10">
           <div data-item class="grid gap-4">
