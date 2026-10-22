@@ -49,16 +49,9 @@ Run `check`, `typecheck` and `test` before you commit. CI runs them on every pus
 
 ## Data
 
-The site shows one release of GeoThai/data. The release is in `data.version`:
+The site shows one release of GeoThai/data. The release is in `data.version`, such as `v2026.10.22`.
 
-```text
-v2026.10.20
-```
-
-To move the site to a newer release:
-
-1. Write the new release tag in `data.version`.
-2. Run `bun run build`.
+`update.yml` moves the site to each new release by itself. It runs daily and on the `data-release` event that GeoThai/source sends when a release ships. To move by hand, write the new release tag in `data.version` and run `bun run build`.
 
 The build reads the JSON files, `datapackage.json` and `CHANGELOG.md` of that release from `raw.githubusercontent.com`. If a file is missing, the build stops with the file name and the HTTP status.
 
