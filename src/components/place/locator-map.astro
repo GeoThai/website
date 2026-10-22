@@ -1,0 +1,31 @@
+---
+import { provincesSmall } from '@geothai/maps';
+
+type Props = {
+  /** Two-digit code of the province to mark on the map of Thailand. */
+  province: string;
+  title: string;
+};
+
+const { province, title } = Astro.props;
+// A locator needs only the outline of the country and the one province, not 77 borders.
+const shape = provincesSmall.shapes.find((s) => s.code === province);
+if (!shape) throw new Error(`locator: no shape for province ${province}`);
+---
+
+<svg
+  class="locator-map block w-24 shrink-0 md:w-32"
+  viewBox={`0 0 ${provincesSmall.width} ${provincesSmall.height}`}
+  role="img"
+  aria-label={title}
+>
+  <title>{title}</title>
+  <path
+    d={provincesSmall.outline}
+    fill="#ffffff"
+    stroke="#e4e4e7"
+    stroke-width="1"
+    vector-effect="non-scaling-stroke"
+  />
+  <path d={shape.d} fill="#000000" />
+</svg>

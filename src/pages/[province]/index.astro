@@ -1,6 +1,8 @@
 ---
+import AreaMap from '@/components/place/area-map.astro';
 import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
+import LocatorMap from '@/components/place/locator-map.astro';
 import Source from '@/components/place/source.astro';
 import Container from '@/components/ui/container.astro';
 import Base from '@/layouts/base.astro';
@@ -32,6 +34,7 @@ const rows = districts
     };
   });
 const postal = postalCodes(inProvince);
+const hrefs = Object.fromEntries(rows.map((d) => [d.code, d.href]));
 const page = new URL(Astro.url.pathname, Astro.site);
 const trail = [
   { label: 'Home', href: '/' },
@@ -50,6 +53,14 @@ const trail = [
       <Heading trail={trail} title={province.name_th}>
         {`${province.name_en} province, code ${province.code}. ${count(rows.length, 'district')}, ${count(inProvince.length, 'subdistrict')} and ${count(postal.length, 'postal code')}.`}
       </Heading>
+
+      <AreaMap province={province.code} hrefs={hrefs} title={`Districts of ${province.name_en}`}>
+        <LocatorMap
+          slot="inset"
+          province={province.code}
+          title={`${province.name_en} in Thailand`}
+        />
+      </AreaMap>
 
       <div>
         <h2 class="text-2xl font-semibold tracking-display">Districts</h2>

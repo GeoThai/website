@@ -1,4 +1,5 @@
 ---
+import AreaMap from '@/components/place/area-map.astro';
 import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
 import Source from '@/components/place/source.astro';
@@ -22,11 +23,16 @@ export async function getStaticPaths() {
 }
 
 const { province, district } = Astro.props as { province: Province; district: District };
-const { subdistricts } = await loadData();
+const { districts, subdistricts } = await loadData();
 const rows = subdistricts.filter((s) => s.district_code === district.code);
 const postal = postalCodes(rows);
 const provinceHref = `/${areaSlug(province)}/`;
 const districtHref = `${provinceHref}${areaSlug(district)}/`;
+const hrefs = Object.fromEntries(
+  districts
+    .filter((d) => d.province_code === province.code)
+    .map((d) => [d.code, `${provinceHref}${areaSlug(d)}/`]),
+);
 const page = new URL(Astro.url.pathname, Astro.site);
 const trail = [
   { label: 'Home', href: '/' },
@@ -53,6 +59,13 @@ const trail = [
         </a>
         {`, code ${district.code}. ${count(rows.length, 'subdistrict')} and ${count(postal.length, 'postal code')}.`}
       </Heading>
+
+      <AreaMap
+        province={province.code}
+        hrefs={hrefs}
+        current={district.code}
+        title={`${district.name_en} in ${province.name_en}`}
+      />
 
       <div>
         <h2 class="text-2xl font-semibold tracking-display">Subdistricts</h2>

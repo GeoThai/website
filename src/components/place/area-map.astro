@@ -1,0 +1,62 @@
+---
+import { districtMap, render, toSvg } from '@geothai/maps';
+
+import { cn } from '@/utils/cn';
+
+type Props = {
+  /** Two-digit code of the province to draw, district by district. */
+  province: string;
+  /** Link of each district page, by district code. */
+  hrefs: Record<string, string>;
+  /** District to draw in black: the district of the current page. */
+  current?: string;
+  title: string;
+  class?: string;
+};
+
+const { province, hrefs, current, title, class: className } = Astro.props;
+const map = await districtMap(province);
+const svg = toSvg(
+  render(map, {
+    title,
+    fill: '#ffffff',
+    fills: current ? { [current]: '#000000' } : {},
+    stroke: '#5e636b',
+    href: (s) => (s.code === current ? undefined : hrefs[s.code]),
+    label: (s) => `${s.name_th} ${s.name_en}`,
+  }),
+);
+---
+
+<figure class={cn('area-map relative rounded-panel bg-mist p-6 md:p-10', className)}>
+  {Astro.slots.has('inset') && (
+    <div class="mb-4 flex justify-end md:pointer-events-none md:absolute md:top-10 md:right-10 md:mb-0">
+      <slot name="inset" />
+    </div>
+  )}
+  <div class="area-map-shape mx-auto max-w-xl" set:html={svg} />
+</figure>
+
+<style>
+  .area-map-shape :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: min(30rem, 70vh);
+  }
+  .area-map :global(a path) {
+    transition: fill 150ms ease-out;
+  }
+  .area-map :global(a:hover path),
+  .area-map :global(a:focus-visible path) {
+    fill: var(--color-line);
+  }
+  .area-map :global(a:focus-visible) {
+    outline: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .area-map :global(a path) {
+      transition: none;
+    }
+  }
+</style>
