@@ -1,4 +1,7 @@
 ---
+import { provinces as provinceMap } from '@geothai/maps';
+
+import AreaMap from '@/components/place/area-map.astro';
 import Breadcrumb from '@/components/place/breadcrumb.astro';
 import ListFilter from '@/components/place/list-filter.astro';
 import Container from '@/components/ui/container.astro';
@@ -15,6 +18,7 @@ const rows = provinces.map((p) => ({
   districts: districts.filter((d) => d.province_code === p.code).length,
   subdistricts: subdistricts.filter((s) => s.province_code === p.code).length,
 }));
+const hrefs = Object.fromEntries(rows.map((p) => [p.code, p.href]));
 const page = new URL(Astro.url.pathname, Astro.site);
 const trail = [{ label: 'Home', href: '/' }, { label: 'Provinces' }];
 ---
@@ -34,7 +38,8 @@ const trail = [{ label: 'Home', href: '/' }, { label: 'Provinces' }];
         All {rows.length} provinces, sorted by code. Each one lists its districts, subdistricts and
         postal codes.
       </p>
-      <ListFilter list="provinces-list" noun="provinces" placeholder="Name or code" class="mt-10" />
+      <AreaMap map={provinceMap} hrefs={hrefs} title="The 77 provinces of Thailand" class="mt-10" />
+      <ListFilter list="provinces-list" noun="provinces" placeholder="Name or code" class="mt-14" />
       <ul id="provinces-list" class="mt-6 border-t border-line">
         {rows.map((p) => (
           <li class="border-line border-b" data-keys={`${p.code} ${p.name_th} ${p.name_en}`}>

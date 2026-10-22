@@ -1,4 +1,5 @@
 ---
+import { districtMap } from '@geothai/maps';
 import AreaMap from '@/components/place/area-map.astro';
 import Heading from '@/components/place/heading.astro';
 import ListFilter from '@/components/place/list-filter.astro';
@@ -54,7 +55,11 @@ const trail = [
         {`${province.name_en} province, code ${province.code}. ${count(rows.length, 'district')}, ${count(inProvince.length, 'subdistrict')} and ${count(postal.length, 'postal code')}.`}
       </Heading>
 
-      <AreaMap province={province.code} hrefs={hrefs} title={`Districts of ${province.name_en}`}>
+      <AreaMap
+        map={await districtMap(province.code)}
+        hrefs={hrefs}
+        title={`Districts of ${province.name_en}`}
+      >
         <LocatorMap
           slot="inset"
           province={province.code}

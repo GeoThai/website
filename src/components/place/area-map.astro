@@ -1,21 +1,21 @@
 ---
-import { districtMap, render, toSvg } from '@geothai/maps';
+import { render, toSvg } from '@geothai/maps';
+import type { MapShapes } from '@geothai/maps/types';
 
 import { cn } from '@/utils/cn';
 
 type Props = {
-  /** Two-digit code of the province to draw, district by district. */
-  province: string;
-  /** Link of each district page, by district code. */
+  /** The areas to draw: `provinces`, or `await districtMap('84')`. */
+  map: MapShapes;
+  /** Link of each area page, by code. */
   hrefs: Record<string, string>;
-  /** District to draw in black: the district of the current page. */
+  /** Area to draw in black: the area of the current page. */
   current?: string;
   title: string;
   class?: string;
 };
 
-const { province, hrefs, current, title, class: className } = Astro.props;
-const map = await districtMap(province);
+const { map, hrefs, current, title, class: className } = Astro.props;
 const svg = toSvg(
   render(map, {
     title,
