@@ -42,6 +42,8 @@ export function initMapTooltips(): void {
   };
 
   const show = (area: SVGPathElement) => {
+    // The map's own <title> would show as the browser's tooltip over ours. aria-label keeps it.
+    area.ownerSVGElement?.querySelector(':scope > title')?.remove();
     const label = labelOf(area);
     if (!label) return false;
     tip.textContent = label;
@@ -49,6 +51,19 @@ export function initMapTooltips(): void {
     return true;
   };
   const hide = () => tip.classList.replace('opacity-100', 'opacity-0');
+
+  // The browser shows an svg <title> as a grey tooltip of its own, so a map carries none.
+  // Its name stays in aria-label. Areas keep their titles until first hover, as the no-JS path.
+  for (const map of document.querySelectorAll('[data-tooltips] svg')) {
+    map.querySelector(':scope > title')?.remove();
+  }
+  new MutationObserver((records) => {
+    for (const r of records) {
+      for (const n of r.addedNodes) {
+        if (n instanceof SVGSVGElement) n.querySelector(':scope > title')?.remove();
+      }
+    }
+  }).observe(document.body, { childList: true, subtree: true });
 
   document.addEventListener('pointermove', (e) => {
     const area = areaAt(e.target);
