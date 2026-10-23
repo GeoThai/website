@@ -51,7 +51,7 @@ const svg = toSvg(
       <slot name="inset" />
     </div>
   )}
-  <div class="area-map-shape mx-auto max-w-xl" set:html={svg} />
+  <div data-zoom-map class="area-map-shape mx-auto max-w-xl" set:html={svg} />
   {note && <figcaption class="mt-5 text-center text-slate text-sm">{note}</figcaption>}
 </figure>
 
