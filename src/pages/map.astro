@@ -19,6 +19,8 @@ const preview = toSvg(
     stroke: '#5e636b',
   }),
 );
+/** The main branch of GeoThai/boundaries always holds the latest release. */
+const DATAWRAPPER = 'https://cdn.jsdelivr.net/gh/GeoThai/boundaries/datawrapper';
 const sample = [
   'จังหวัด\tผู้ใช้ใหม่',
   'กรุงเทพมหานคร\t1,204',
@@ -103,6 +105,7 @@ const sample = [
         <div class="grid content-start gap-6">
           <div
             id="map-frame"
+            data-datawrapper={DATAWRAPPER}
             data-tooltips
             data-zoom
             class="rounded-panel border border-line p-6"
@@ -117,13 +120,25 @@ const sample = [
             <Button data-action="svg" variant="quiet" size="sm" href="#" download="geothai-map.svg"
               >SVG</Button
             >
-            <a
-              href="https://academy.datawrapper.de/article/145-how-to-upload-your-own-map"
-              class="text-sm text-slate underline underline-offset-4 hover:text-black"
+            <Button
+              data-action="datawrapper"
+              variant="quiet"
+              size="sm"
+              href={`${DATAWRAPPER}/provinces.topojson`}
+              download
             >
-              Draw it in Datawrapper with our files
-            </a>
+              Datawrapper base map
+            </Button>
           </div>
+          <p class="text-sm text-slate">
+            In Datawrapper, upload the base map and match the Codes CSV on its code column.{' '}
+            <a
+              href="https://github.com/GeoThai/boundaries#datawrapper"
+              class="underline underline-offset-4 hover:text-black"
+              >How</a
+            >
+          </p>
+          <div hidden></div>
         </div>
       </div>
     </Container>
@@ -251,6 +266,10 @@ const sample = [
     const csv = new Blob([toCsv(rows, found)], { type: 'text/csv' });
     (document.querySelector('[data-action="csv"]') as HTMLAnchorElement).href =
       URL.createObjectURL(csv);
+    const base = frame.dataset.datawrapper ?? '';
+    (document.querySelector('[data-action="datawrapper"]') as HTMLAnchorElement).href = small
+      ? `${base}/provinces.topojson`
+      : `${base}/districts.topojson`;
     const file = new Blob([svg], { type: 'image/svg+xml' });
     (document.querySelector('[data-action="svg"]') as HTMLAnchorElement).href =
       URL.createObjectURL(file);
