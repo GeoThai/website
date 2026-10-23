@@ -9,15 +9,15 @@ Live at [geothai.fasu.dev](https://geothai.fasu.dev).
 
 ## What it builds
 
-| Pages                 |   Count | Example                                                |
-| --------------------- | ------: | ------------------------------------------------------ |
-| Home, Docs, Changelog |       3 | `/docs/`                                               |
-| Provinces             |  1 + 77 | `/84-surat-thani/`                                     |
-| Districts             |     928 | `/84-surat-thani/8405-ko-pha-ngan/`                    |
-| Subdistricts          |   7,436 | `/84-surat-thani/8405-ko-pha-ngan/840501-ko-pha-ngan/` |
-| Postal codes          | 1 + 976 | `/postal-codes/84280/`                                 |
+| Pages                      |   Count | Example                                                |
+| -------------------------- | ------: | ------------------------------------------------------ |
+| Home, Docs, Changelog, Map |       4 | `/map/`                                                |
+| Provinces                  |  1 + 77 | `/84-surat-thani/`                                     |
+| Districts                  |     928 | `/84-surat-thani/8405-ko-pha-ngan/`                    |
+| Subdistricts               |   7,436 | `/84-surat-thani/8405-ko-pha-ngan/840501-ko-pha-ngan/` |
+| Postal codes               | 1 + 976 | `/postal-codes/84280/`                                 |
 
-Every page is static HTML. The build also writes `data/search.json` for the search on the home page, a sitemap and JSON-LD for search engines.
+Every page is static HTML. The area and postal code pages have an SVG map from [`@geothai/maps`](https://github.com/GeoThai/maps), drawn at build time, with tooltips and zoom. The map page draws a pasted table in the browser. The build also writes `data/search.json` for the search on the home page, a sitemap and JSON-LD for search engines.
 
 ## Requirements
 
@@ -51,7 +51,7 @@ Run `check`, `typecheck` and `test` before you commit. CI runs them on every pus
 
 The data comes from [GeoThai/data](https://github.com/GeoThai/data). To see how it is built and checked, read [How it is built](https://github.com/GeoThai/data#how-it-is-built).
 
-The site shows one release of GeoThai/data. The release is in `data.version`, such as `v2026.10.22`.
+The site shows one release of GeoThai/data. The release is in `data.version`, such as `v2026.10.23`.
 
 `update.yml` moves the site to each new release by itself. It runs daily and on the `data-release` event that GeoThai/source sends when a release ships. To move by hand, write the new release tag in `data.version` and run `bun run build`.
 
@@ -63,14 +63,15 @@ The build reads the JSON files, `datapackage.json` and `CHANGELOG.md` of that re
 src/
 ├── components/
 │   ├── home/      sections of the home page
+│   ├── changelog/ the map of each release
 │   ├── layout/    header and footer
-│   ├── place/     parts of the area pages: heading, totals, list filter, source line
+│   ├── place/     parts of the area pages: heading, maps, list filter, source line
 │   └── ui/        button, input, card, container, code blocks
 ├── layouts/       Base: head tags, header, footer, smooth scroll
-├── lib/           data loading, URL helpers, motion
+├── lib/           data loading, motion, map tooltips and zoom
 ├── pages/         one file per route
 ├── styles/        Tailwind theme: colors, type, radius, motion
-└── utils/         pure functions with tests: slugs, search, formatting, JSON-LD
+└── utils/         pure functions with tests: slugs, search, formatting, JSON-LD, pasted tables
 ```
 
 ## Deploy
@@ -87,6 +88,7 @@ The `production` environment on GitHub holds two secrets: `CLOUDFLARE_API_TOKEN`
 ## Stack
 
 - [Astro](https://astro.build) for static pages
+- [`@geothai/maps`](https://github.com/GeoThai/maps) for the maps
 - [Tailwind CSS](https://tailwindcss.com) v4 for styles
 - [GSAP](https://gsap.com) and [Lenis](https://lenis.darkroom.engineering) for motion. If the system asks for reduced motion, both stop.
 - [Biome](https://biomejs.dev) for format and lint
