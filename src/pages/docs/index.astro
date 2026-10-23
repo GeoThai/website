@@ -76,12 +76,12 @@ same_code = [s for s in subdistricts if "10200" in s["postal_codes"]]
 print(len(same_code))  # ${samePostal}`;
 
 const npmInstall = [
-  { tool: 'npm', code: 'npm install geothai' },
-  { tool: 'pnpm', code: 'pnpm add geothai' },
-  { tool: 'yarn', code: 'yarn add geothai' },
-  { tool: 'bun', code: 'bun add geothai' },
+  { tool: 'npm', code: 'npm install @geothai/core' },
+  { tool: 'pnpm', code: 'pnpm add @geothai/core' },
+  { tool: 'yarn', code: 'yarn add @geothai/core' },
+  { tool: 'bun', code: 'bun add @geothai/core' },
 ];
-const npmPackage = `import { address, match, search } from 'geothai';
+const npmPackage = `import { address, match, search } from '@geothai/core';
 
 address('840503')?.subdistrict.name_en; // '${koTao?.name_en}'
 search('phangan').map((r) => r.level); // ['district', 'subdistrict']
@@ -271,8 +271,8 @@ const jsonLd = graph(await datasetLd());
             <InstallTabs id="install-js" label="JavaScript package manager" commands={npmInstall} />
             <CodeBlock code={npmPackage} lang="js" />
             <div class="flex flex-wrap gap-3">
-              <Button href="https://www.npmjs.com/package/geothai" variant="quiet" size="sm">
-                geothai on npm
+              <Button href="https://www.npmjs.com/package/@geothai/core" variant="quiet" size="sm">
+                @geothai/core on npm
               </Button>
               <Button href="https://github.com/GeoThai/npm-packages" variant="quiet" size="sm">
                 GeoThai/npm-packages
